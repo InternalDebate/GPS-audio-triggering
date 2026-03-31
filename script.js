@@ -1,39 +1,68 @@
-// 1. Initialize the Leaflet Map
-const map = L.map('map').setView([51.505, -0.09], 15); // Set to your park coordinates
+// 1. SETTINGS & POI DATA
+// Find these coords on Google Maps (Right-click a spot > Copy coordinates)
+const poiSettings = {
+    lat: 51.505, 
+    lng: -0.09, 
+    radiusInMeters: 30,
+    audioFile: 'Nature noise - Echoes - EMF.mp3' // Make sure this is in your folder!
+};
+
+// 2. INITIALIZE MAP & AUDIO
+const map = L.map('map').setView([poiSettings.lat, poiSettings.lng], 16);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
-// 2. Define your Sound Zone (Using Turf and Leaflet)
-const zoneCenter = [51.505, -0.09]; // [Lat, Lng]
-const zoneRadius = 0.02; // 20 meters in Kilometers
+// Add the visual "Zone" to the map
+L.circle([poiSettings.lat, poiSettings.lng], {
+    radius: poiSettings.radiusInMeters,
+    color: '#3498db',
+    fillOpacity: 0.2
+}).addTo(map);
 
-// Draw the zone on the map for the user to see
-L.circle(zoneCenter, { radius: 20, color: 'blue' }).addTo(map);
-const userMarker = L.marker([0,0]).addTo(map); // A marker for the user
+// The User's Dot
+const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red' }).addTo(map);
 
-// 3. Set up the Sound with Howler
-const sound = new Howler({
-  src: ['forest.mp3'],
-  loop: true,
-  volume: 0 // Start silent
+// The Sound
+const sound = new Howl({
+    src: [poiSettings.audioFile],
+    loop: true,
+    volume: 0 // Start silent
 });
 
-// 4. The Geolocation Logic
-navigator.geolocation.watchPosition((pos) => {
-    const userPoint = turf.point([pos.coords.longitude, pos.coords.latitude]);
-    const centerPoint = turf.point([zoneCenter[1], zoneCenter[0]]); // Turf uses [Lng, Lat]
+// 3. START BUTTON LOGIC
+document.getElementById('start-btn').addEventListener('click', function() {
+    this.style.display = 'none';
+    document.getElementById('status').innerText = "Walk toward the blue circle...";
+    
+    // Begin tracking
+    startTracking();
+});
 
-    // Move the marker on the map
-    userMarker.setLatLng([pos.coords.latitude, pos.coords.longitude]);
+// 4. GPS TRACKING ENGINE
+function startTracking() {
+    navigator.geolocation.watchPosition((pos) => {
+        const uLat = pos.coords.latitude;
+        const uLng = pos.coords.longitude;
 
-    // Calculate distance using Turf
-    const distance = turf.distance(userPoint, centerPoint, {units: 'kilometers'});
+        // Update Map
+        userMarker.setLatLng([uLat, uLng]);
+        map.panTo([uLat, uLng]);
 
-    if (distance <= zoneRadius) {
-        // User is INSIDE: Fade in the sound
-        if (!sound.playing()) sound.play();
-        sound.fade(sound.volume(), 1.0, 1000); // Smooth fade to full volume over 1 sec
-    } else {
-        // User is OUTSIDE: Fade out
-        sound.fade(sound.volume(), 0, 1000);
-    }
-}, err => console.error(err), { enableHighAccuracy: true });
+        // SPATIAL LOGIC WITH TURF.JS
+        const userPoint = turf.point([uLng, uLat]);
+        const poiPoint = turf.point([poiSettings.lng, poiSettings.lat]);
+        const distance = turf.distance(userPoint, poiPoint, {units: 'meters'});
+
+        // AUDIO TRIGGER
+        if (distance <= poiSettings.radiusInMeters) {
+            if (!sound.playing()) sound.play();
+            sound.fade(sound.volume(), 1.0, 2000); // Fade in over 2 seconds
+            document.getElementById('status').innerText = "Now Playing: Zone Audio";
+        } else {
+            sound.fade(sound.volume(), 0, 2000); // Fade out
+            document.getElementById('status').innerText = "Outside Zone";
+        }
+    }, (err) => console.error(err), { 
+        enableHighAccuracy: true, 
+        maximumAge: 0 
+    });
+}
