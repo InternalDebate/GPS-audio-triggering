@@ -51,53 +51,63 @@ function updateGuidance(uLat, uLng) {
 }
 
 // 5. COMPASS LOGIC
+// 5. COMPASS LOGIC
 let targetHeading = 0;
 let currentHeading = 0;
 
 function initCompass() {
     const needleElement = document.getElementById('compass-needle');
     
-    // DEBUG: This will tell us if the HTML is missing the needle
     if (!needleElement) {
-        alert("Bug: 'compass-needle' ID not found in HTML!");
+        console.error("Compass needle element missing!");
         return;
     }
 
-    // 1. Request Sensor Access
+    // 1. Setup the Listener
+    const handleMotion = (e) => {
+        // Try iOS property first, then Android absolute, then standard alpha
+        let heading = e.webkitCompassHeading || e.alpha;
+        
+        if (e.absolute === false && e.webkitCompassHeading === undefined) {
+            // If it's not absolute and not iOS, alpha might be relative (less useful)
+            // but we'll use it as a last resort.
+        }
+
+        if (heading !== null && heading !== undefined) {
+            // Android alpha is counter-clockwise, so we flip it
+            targetHeading = e.webkitCompassHeading ? heading : 360 - heading;
+        }
+    };
+
+    // 2. Request Sensor Access (iOS)
     if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        // iOS Path
         DeviceOrientationEvent.requestPermission()
-            .then(response => {
-                if (response === 'granted') {
-                    window.addEventListener('deviceorientation', e => {
-                        if (e.webkitCompassHeading) targetHeading = e.webkitCompassHeading;
-                    }, true);
+            .then(state => {
+                if (state === 'granted') {
+                    window.addEventListener('deviceorientation', handleMotion, true);
                 }
             })
             .catch(console.error);
     } else {
-        // Android / Desktop Path
-        window.addEventListener('deviceorientationabsolute', e => {
-            if (e.alpha !== null) targetHeading = 360 - e.alpha;
-        }, true);
+        // Android / Desktop
+        window.addEventListener('deviceorientationabsolute', handleMotion, true);
+        // Fallback for older devices
+        window.addEventListener('deviceorientation', handleMotion, true);
     }
 
-    // 2. Start the Animation Loop
+    // 3. The Animation Loop
     function animate() {
         let diff = targetHeading - currentHeading;
-        
-        // Shortest path math (prevents the North "spin")
         if (diff > 180) diff -= 360;
         if (diff < -180) diff += 360;
 
-        currentHeading += diff * 0.15; // Smoothness factor
+        currentHeading += diff * 0.15;
 
-        // Update the CSS
+        // Apply rotation
         needleElement.style.transform = `translate(-50%, -50%) rotate(${currentHeading}deg)`;
         
         requestAnimationFrame(animate);
     }
-    
     animate();
 }
 // 6. HELPERS & EVENTS
