@@ -10,8 +10,8 @@ const soundZones = [
     },
     {
         name: "Spot 2",
-        lat: 52.090956, // Example coordinate - change these!
-        lng: 5.131861,
+        lat: 52.090111, // Example coordinate - change these!
+        lng: 5.131919,
         radius: 20,
         audioFile: 'Nature noise - Echoes - PIEP.mp3',
         howl: null
