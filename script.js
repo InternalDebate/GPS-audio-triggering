@@ -82,6 +82,8 @@ document.getElementById('start-btn').addEventListener('click', function() {
 
 // 5. GPS TRACKING ENGINE
 function startTracking() {
+    const directionDisplay = document.getElementById('direction-hint'); // Make sure this ID is in your HTML!
+
     navigator.geolocation.watchPosition((pos) => {
         const uLat = pos.coords.latitude;
         const uLng = pos.coords.longitude;
@@ -91,23 +93,48 @@ function startTracking() {
 
         const userPoint = turf.point([uLng, uLat]);
         let activeZoneName = "No zone detected...";
+        
+        // Track the nearest zone for the "Move East" instructions
+        let nearestZone = null;
+        let shortestDistance = Infinity;
 
         soundZones.forEach(zone => {
             const poiPoint = turf.point([zone.lng, zone.lat]);
             const distance = turf.distance(userPoint, poiPoint, {units: 'meters'});
 
+            // AUDIO LOGIC
             if (distance <= zone.radius) {
                 if (!zone.howl.playing()) zone.howl.play();
                 zone.howl.fade(zone.howl.volume(), 1.0, 2000); 
                 activeZoneName = `Playing: ${zone.name}`;
             } else {
                 zone.howl.fade(zone.howl.volume(), 0, 2000);
-                // Optional: Pause after fade to save juice
                 if (zone.howl.volume() === 0 && zone.howl.playing()) {
                     zone.howl.pause();
                 }
             }
+
+            // FIND NEAREST FOR HINT
+            if (distance < shortestDistance) {
+                shortestDistance = distance;
+                nearestZone = zone;
+            }
         });
+
+        // 6. DIRECTIONAL HINT LOGIC
+        if (nearestZone) {
+            if (shortestDistance <= nearestZone.radius) {
+                directionDisplay.innerText = "You have arrived!";
+            } else {
+                const poiPoint = turf.point([nearestZone.lng, nearestZone.lat]);
+                // Calculate bearing (angle)
+                const bearing = turf.rhumbBearing(userPoint, poiPoint);
+                // Convert angle to word (e.g., "East")
+                const compassDir = getCompassDirection(bearing);
+                
+                directionDisplay.innerText = `Walk ${compassDir} to ${nearestZone.name} (${Math.round(shortestDistance)}m)`;
+            }
+        }
 
         document.getElementById('status').innerText = activeZoneName;
 
@@ -118,4 +145,18 @@ function startTracking() {
         enableHighAccuracy: true, 
         maximumAge: 0 
     });
+}
+
+// 7. COMPASS HELPER FUNCTION
+// Converts degrees (-180 to 180) into cardinal directions
+function getCompassDirection(bearing) {
+    if (bearing >= -22.5 && bearing < 22.5) return 'North';
+    if (bearing >= 22.5 && bearing < 67.5) return 'Northeast';
+    if (bearing >= 67.5 && bearing < 112.5) return 'East';
+    if (bearing >= 112.5 && bearing < 157.5) return 'Southeast';
+    if (bearing >= 157.5 || bearing < -157.5) return 'South';
+    if (bearing >= -157.5 && bearing < -112.5) return 'Southwest';
+    if (bearing >= -112.5 && bearing < -67.5) return 'West';
+    if (bearing >= -67.5 && bearing < -22.5) return 'Northwest';
+    return 'Toward Target';
 }
