@@ -13,7 +13,7 @@ const soundZones = [
         lat: 52.090956, // Example coordinate - change these!
         lng: 5.131861,
         radius: 20,
-        audioFile: 'forest-birds.mp3',
+        audioFile: 'Nature noise - Echoes - PIEP.mp3',
         howl: null
     },
     {
@@ -21,7 +21,7 @@ const soundZones = [
         lat: 52.090944, // Example coordinate - change these!
         lng: 5.133195,
         radius: 20,
-        audioFile: '.mp3',
+        audioFile: 'Nature noise - Echoes - WATERLEIDING.mp3',
         howl: null
     }
     // You can add as many { } blocks here as you like!
