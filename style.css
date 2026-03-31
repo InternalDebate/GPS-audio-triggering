@@ -23,3 +23,25 @@ body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     border-radius: 5px;
     cursor: pointer;
 }
+
+#crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000; /* Higher than the map */
+    color: red;
+    font-size: 24px;
+    font-weight: bold;
+    pointer-events: none; /* Allows you to still click the map "through" the plus sign */
+}
+
+#center-coords {
+    margin-top: 10px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: #333;
+    background: #eee;
+    padding: 5px;
+    border-radius: 4px;
+}
