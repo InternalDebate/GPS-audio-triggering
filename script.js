@@ -55,22 +55,51 @@ let targetHeading = 0;
 let currentHeading = 0;
 
 function initCompass() {
-    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
-        DeviceOrientationEvent.requestPermission().then(s => {
-            if (s === 'granted') window.addEventListener('deviceorientation', e => { targetHeading = e.webkitCompassHeading; });
-        });
-    } else {
-        window.addEventListener('deviceorientationabsolute', e => { targetHeading = 360 - e.alpha; });
+    const needleElement = document.getElementById('compass-needle');
+    
+    // DEBUG: This will tell us if the HTML is missing the needle
+    if (!needleElement) {
+        alert("Bug: 'compass-needle' ID not found in HTML!");
+        return;
     }
-    requestAnimationFrame(function animate() {
-        let diff = targetHeading - currentHeading;
-        if (diff > 180) diff -= 360; if (diff < -180) diff += 360;
-        currentHeading += diff * 0.15;
-        document.getElementById('compass-needle').style.transform = `translate(-50%, -50%) rotate(${currentHeading}deg)`;
-        requestAnimationFrame(animate);
-    });
-}
 
+    // 1. Request Sensor Access
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+        // iOS Path
+        DeviceOrientationEvent.requestPermission()
+            .then(response => {
+                if (response === 'granted') {
+                    window.addEventListener('deviceorientation', e => {
+                        if (e.webkitCompassHeading) targetHeading = e.webkitCompassHeading;
+                    }, true);
+                }
+            })
+            .catch(console.error);
+    } else {
+        // Android / Desktop Path
+        window.addEventListener('deviceorientationabsolute', e => {
+            if (e.alpha !== null) targetHeading = 360 - e.alpha;
+        }, true);
+    }
+
+    // 2. Start the Animation Loop
+    function animate() {
+        let diff = targetHeading - currentHeading;
+        
+        // Shortest path math (prevents the North "spin")
+        if (diff > 180) diff -= 360;
+        if (diff < -180) diff += 360;
+
+        currentHeading += diff * 0.15; // Smoothness factor
+
+        // Update the CSS
+        needleElement.style.transform = `translate(-50%, -50%) rotate(${currentHeading}deg)`;
+        
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+}
 // 6. HELPERS & EVENTS
 function getCompassDirection(b) {
     if (b >= -22.5 && b < 22.5) return 'North';
