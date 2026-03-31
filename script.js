@@ -1,57 +1,58 @@
 // 1. SETTINGS & MULTIPLE POI DATA
 const soundZones = [
     {
-        name: "Spot 1",
+        name: "Spot 1 (EMF)",
         lat: 52.089268,
         lng: 5.130624,
         radius: 20,
-        audioFile: 'Nature noise - Echoes - EMF.mp3',
-        howl: null // This will hold the audio object
+        audioFile: 'Nature noise - Echoes - EMF.mp3'
     },
     {
-        name: "Spot 2",
-        lat: 52.090111, // Example coordinate - change these!
+        name: "Spot 2 (PIEP)",
+        lat: 52.090111,
         lng: 5.131919,
         radius: 20,
-        audioFile: 'Nature noise - Echoes - PIEP.mp3',
-        howl: null
+        audioFile: 'Nature noise - Echoes - PIEP.mp3'
     },
     {
-        name: "Spot 3",
-        lat: 52.090944, // Example coordinate - change these!
+        name: "Spot 3 (WATERLEIDING)",
+        lat: 52.090944,
         lng: 5.133195,
         radius: 20,
-        audioFile: 'Nature noise - Echoes - WATERLEIDING.mp3',
-        howl: null
+        audioFile: 'Nature noise - Echoes - WATERLEIDING.mp3'
     }
-    // You can add as many { } blocks here as you like!
 ];
 
 // 2. INITIALIZE MAP
-// Set the initial view to the first zone in your list
+// Start view at Spot 1
 const map = L.map('map').setView([soundZones[0].lat, soundZones[0].lng], 16);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
 const centerDisplay = document.getElementById('center-coords');
 
-// Function to update the coordinate readout
+// Function to update the coordinate readout based on the crosshair (map center)
 function updateCenterCoords() {
     const center = map.getCenter();
-    // Fixed(5) keeps the numbers from jumping around too much
-    centerDisplay.innerText = `Center: ${center.lat.toFixed(5)}, ${center.lng.toFixed(5)}`;
+    if (center) {
+        centerDisplay.innerText = `Center: ${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`;
+    }
 }
 
-// Listen for map movement
+// Listen for map movement (constant update + final stop update)
 map.on('move', updateCenterCoords);
+map.on('moveend', updateCenterCoords);
+// Initial call to ensure it's not 0 on load
+map.whenReady(updateCenterCoords);
 
-// Run once at the start to show initial coords
-updateCenterCoords();
-
-// The User's Dot (starting at 0,0 until GPS kicks in)
+// The User's GPS Dot
 const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red', zIndexOffset: 1000 }).addTo(map);
 
 // 3. PREPARE ZONES (Audio & Visuals)
 soundZones.forEach(zone => {
-    // Add the visual circle to the map
+    // Add visual circle
     L.circle([zone.lat, zone.lng], {
         radius: zone.radius,
         color: '#3498db',
@@ -60,19 +61,18 @@ soundZones.forEach(zone => {
 
     // Initialize Howl for each zone
     zone.howl = new Howl({
-        src: [zone.file || zone.audioFile], // Checks both naming conventions
+        src: [zone.audioFile],
         loop: true,
         volume: 0,
-        html5: true // Better for mobile battery and larger files
+        html5: true 
     });
 });
 
 // 4. START BUTTON LOGIC
 document.getElementById('start-btn').addEventListener('click', function() {
     this.style.display = 'none';
-    document.getElementById('status').innerText = "Walk into a blue circle to hear the sound...";
+    document.getElementById('status').innerText = "Walk into a blue circle...";
     
-    // Resume AudioContext (Required by browsers)
     if (Howler.ctx.state === 'suspended') {
         Howler.ctx.resume();
     }
@@ -89,25 +89,23 @@ function startTracking() {
         // Update the red dot location
         userMarker.setLatLng([uLat, uLng]);
 
-        // Create a Turf point for the user
         const userPoint = turf.point([uLng, uLat]);
+        let activeZoneName = "No zone detected...";
 
-        let activeZoneName = "Looking for zones...";
-
-        // LOOP THROUGH ALL ZONES
         soundZones.forEach(zone => {
             const poiPoint = turf.point([zone.lng, zone.lat]);
             const distance = turf.distance(userPoint, poiPoint, {units: 'meters'});
 
             if (distance <= zone.radius) {
-                // USER IS INSIDE THIS ZONE
                 if (!zone.howl.playing()) zone.howl.play();
                 zone.howl.fade(zone.howl.volume(), 1.0, 2000); 
-                activeZoneName = `In Zone: ${zone.name}`;
+                activeZoneName = `Playing: ${zone.name}`;
             } else {
-                // USER IS OUTSIDE THIS ZONE
-                // Fade out; Howler will keep the file ready but silent
                 zone.howl.fade(zone.howl.volume(), 0, 2000);
+                // Optional: Pause after fade to save juice
+                if (zone.howl.volume() === 0 && zone.howl.playing()) {
+                    zone.howl.pause();
+                }
             }
         });
 
