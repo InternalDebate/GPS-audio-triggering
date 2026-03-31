@@ -60,21 +60,22 @@ body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family:
     align-items: center;
     justify-content: center;
 }
+
 #compass-pointer {
     width: 0;
     height: 0;
-    /* Create a triangle using borders */
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
     border-bottom: 20px solid red; 
-    
-    /* Center it */
     position: absolute;
     
-    /* CRITICAL: Remove or shorten transitions to stop the "North Spasm" */
-    transition: transform 0.05s linear; 
+    /* REMOVE TRANSITIONS ENTIRELY */
+    /* The JavaScript logic above handles the smoothness now */
+    transition: none; 
+    
+    /* Ensure it rotates around its center-point */
+    transform-origin: center center;
 }
-
 #compass-ring {
     position: absolute;
     width: 100%;
