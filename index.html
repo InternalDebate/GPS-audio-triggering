@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-  <script src="https://unpkg.com/turf@6/turf.min.js"></script>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
-    <title>My GPS Soundwalk</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPS Soundwalk Pro</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="ui">
+    <div id="ui-overlay">
         <h1>Park Soundwalk</h1>
-        <button id="startBtn">Start Walk</button>
-        <p id="status">Status: Waiting to start...</p>
-        <p id="coords">Lat: -- | Lng: --</p>
+        <button id="start-btn">Start Experience</button>
+        <p id="status">Ready to walk?</p>
     </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    
     <script src="script.js"></script>
 </body>
 </html>
