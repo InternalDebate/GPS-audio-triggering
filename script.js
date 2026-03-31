@@ -24,7 +24,6 @@ const soundZones = [
 ];
 
 // 2. INITIALIZE MAP
-// Start view at Spot 1
 const map = L.map('map').setView([soundZones[0].lat, soundZones[0].lng], 16);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -32,8 +31,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 const centerDisplay = document.getElementById('center-coords');
+const pointer = document.getElementById('compass-pointer'); // For the visual compass
 
-// Function to update the coordinate readout based on the crosshair (map center)
 function updateCenterCoords() {
     const center = map.getCenter();
     if (center) {
@@ -41,25 +40,20 @@ function updateCenterCoords() {
     }
 }
 
-// Listen for map movement (constant update + final stop update)
 map.on('move', updateCenterCoords);
 map.on('moveend', updateCenterCoords);
-// Initial call to ensure it's not 0 on load
 map.whenReady(updateCenterCoords);
 
-// The User's GPS Dot
 const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red', zIndexOffset: 1000 }).addTo(map);
 
-// 3. PREPARE ZONES (Audio & Visuals)
+// 3. PREPARE ZONES
 soundZones.forEach(zone => {
-    // Add visual circle
     L.circle([zone.lat, zone.lng], {
         radius: zone.radius,
         color: '#3498db',
         fillOpacity: 0.2
     }).addTo(map).bindPopup(zone.name);
 
-    // Initialize Howl for each zone
     zone.howl = new Howl({
         src: [zone.audioFile],
         loop: true,
@@ -78,23 +72,21 @@ document.getElementById('start-btn').addEventListener('click', function() {
     }
 
     startTracking();
+    initCompass(); // Integrated: Starts the magnetometer/gyroscope logic
 });
 
 // 5. GPS TRACKING ENGINE
 function startTracking() {
-    const directionDisplay = document.getElementById('direction-hint'); // Make sure this ID is in your HTML!
+    const directionDisplay = document.getElementById('direction-hint');
 
     navigator.geolocation.watchPosition((pos) => {
         const uLat = pos.coords.latitude;
         const uLng = pos.coords.longitude;
 
-        // Update the red dot location
         userMarker.setLatLng([uLat, uLng]);
-
         const userPoint = turf.point([uLng, uLat]);
         let activeZoneName = "No zone detected...";
         
-        // Track the nearest zone for the "Move East" instructions
         let nearestZone = null;
         let shortestDistance = Infinity;
 
@@ -102,7 +94,6 @@ function startTracking() {
             const poiPoint = turf.point([zone.lng, zone.lat]);
             const distance = turf.distance(userPoint, poiPoint, {units: 'meters'});
 
-            // AUDIO LOGIC
             if (distance <= zone.radius) {
                 if (!zone.howl.playing()) zone.howl.play();
                 zone.howl.fade(zone.howl.volume(), 1.0, 2000); 
@@ -114,24 +105,19 @@ function startTracking() {
                 }
             }
 
-            // FIND NEAREST FOR HINT
             if (distance < shortestDistance) {
                 shortestDistance = distance;
                 nearestZone = zone;
             }
         });
 
-        // 6. DIRECTIONAL HINT LOGIC
-        if (nearestZone) {
+        if (nearestZone && directionDisplay) {
             if (shortestDistance <= nearestZone.radius) {
                 directionDisplay.innerText = "You have arrived!";
             } else {
                 const poiPoint = turf.point([nearestZone.lng, nearestZone.lat]);
-                // Calculate bearing (angle)
                 const bearing = turf.rhumbBearing(userPoint, poiPoint);
-                // Convert angle to word (e.g., "East")
                 const compassDir = getCompassDirection(bearing);
-                
                 directionDisplay.innerText = `Walk ${compassDir} to ${nearestZone.name} (${Math.round(shortestDistance)}m)`;
             }
         }
@@ -147,8 +133,36 @@ function startTracking() {
     });
 }
 
-// 7. COMPASS HELPER FUNCTION
-// Converts degrees (-180 to 180) into cardinal directions
+// 6. COMPASS/ORIENTATION LOGIC
+function initCompass() {
+    // Check for iOS 13+ permissions
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+            .then(response => {
+                if (response == 'granted') {
+                    window.addEventListener('deviceorientation', compassHandler, true);
+                }
+            })
+            .catch(console.error);
+    } else {
+        // Android or older iOS
+        window.addEventListener('deviceorientationabsolute', compassHandler, true);
+        // Fallback for older browsers
+        window.addEventListener('deviceorientation', compassHandler, true);
+    }
+}
+
+function compassHandler(e) {
+    // webkitCompassHeading is iOS-specific; e.alpha is standard for Android
+    let heading = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+    
+    if (heading && pointer) {
+        // We rotate the pointer based on the phone's orientation
+        pointer.style.transform = `rotate(${heading}deg)`;
+    }
+}
+
+// 7. COMPASS HELPER FUNCTION (For text-based directions)
 function getCompassDirection(bearing) {
     if (bearing >= -22.5 && bearing < 22.5) return 'North';
     if (bearing >= 22.5 && bearing < 67.5) return 'Northeast';
