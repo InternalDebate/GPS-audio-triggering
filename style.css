@@ -1,77 +1,76 @@
-/* General HUD Style */
-.hud-item {
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    font-family: sans-serif;
+    overflow: hidden;
+}
+
+#map {
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+#ui-overlay {
     position: absolute;
-    z-index: 3000;
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(5px); /* Modern blurred glass effect */
-    padding: 10px 15px;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    pointer-events: none; /* Allows you to click map through the gaps */
+    top: 10px;
+    left: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    z-index: 1000;
+    max-width: 250px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
-/* Top Left: Branding */
-#hud-top-left {
-    top: 20px;
-    left: 20px;
-    border-left: 4px solid #3498db;
-}
-
-#app-title {
-    margin: 0;
-    font-size: 1.2rem;
-    letter-spacing: 2px;
-    color: #2c3e50;
-}
-
-#status {
-    margin: 0;
-    font-size: 0.8rem;
-    color: #7f8c8d;
-}
-
-/* Bottom Center: The Guidance Hint */
-#hud-bottom-center {
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    text-align: center;
-    background: rgba(44, 62, 80, 0.9); /* Darker for high contrast */
-    color: white;
-}
-
-#direction-hint {
-    margin: 0;
-    font-weight: bold;
-    font-size: 1rem;
-}
-
-/* Bottom Right: Coordinates */
-#hud-bottom-right {
-    bottom: 20px;
-    right: 20px;
-    padding: 5px 10px;
-}
-
-#center-coords {
-    font-family: monospace;
-    font-size: 0.7rem;
-}
-
-/* Big Start Button Customization */
 #start-btn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 4000;
-    padding: 20px 40px;
-    font-size: 1.5rem;
-    background: #e74c3c;
+    width: 100%;
+    padding: 10px;
+    background: #27ae60;
     color: white;
     border: none;
-    border-radius: 50px;
-    box-shadow: 0 10px 30px rgba(231, 76, 60, 0.4);
+    border-radius: 4px;
     cursor: pointer;
+    font-size: 16px;
+}
+
+#compass-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    border: 2px solid #333;
+    z-index: 1000;
+}
+
+#compass-needle {
+    width: 0; height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 20px solid red;
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    transform-origin: 50% 70%;
+}
+
+.label { position: absolute; font-size: 10px; font-weight: bold; }
+.n { top: 2px; left: 50%; transform: translateX(-50%); }
+.e { right: 2px; top: 50%; transform: translateY(-50%); }
+.s { bottom: 2px; left: 50%; transform: translateX(-50%); }
+.w { left: 2px; top: 50%; transform: translateY(-50%); }
+
+#crosshair {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
+    color: red;
+    font-size: 24px;
+    pointer-events: none;
 }
