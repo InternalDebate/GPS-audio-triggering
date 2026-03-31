@@ -31,6 +31,20 @@ const soundZones = [
 // Set the initial view to the first zone in your list
 const map = L.map('map').setView([soundZones[0].lat, soundZones[0].lng], 16);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+const centerDisplay = document.getElementById('center-coords');
+
+// Function to update the coordinate readout
+function updateCenterCoords() {
+    const center = map.getCenter();
+    // Fixed(5) keeps the numbers from jumping around too much
+    centerDisplay.innerText = `Center: ${center.lat.toFixed(5)}, ${center.lng.toFixed(5)}`;
+}
+
+// Listen for map movement
+map.on('move', updateCenterCoords);
+
+// Run once at the start to show initial coords
+updateCenterCoords();
 
 // The User's Dot (starting at 0,0 until GPS kicks in)
 const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red', zIndexOffset: 1000 }).addTo(map);
