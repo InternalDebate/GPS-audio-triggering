@@ -37,7 +37,9 @@ const needle = document.getElementById('compass-needle');
 function updateCenterCoords() {
     const center = map.getCenter();
     if (center) {
-        centerDisplay.innerText = `Center: ${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`;
+        // Updated to match the new HUD ID
+        document.getElementById('center-coords').innerText = 
+            `${center.lat.toFixed(5)}, ${center.lng.toFixed(5)}`;
     }
 }
 
