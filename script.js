@@ -151,14 +151,23 @@ function initCompass() {
         window.addEventListener('deviceorientation', compassHandler, true);
     }
 }
+let lastHeading = 0;
 
 function compassHandler(e) {
-    // webkitCompassHeading is iOS-specific; e.alpha is standard for Android
-    let heading = e.webkitCompassHeading || Math.abs(e.alpha - 360);
+    let heading = 0;
     
-    if (heading && pointer) {
-        // We rotate the pointer based on the phone's orientation
-        pointer.style.transform = `rotate(${heading}deg)`;
+    if (e.webkitCompassHeading) {
+        heading = e.webkitCompassHeading;
+    } else if (e.alpha !== null) {
+        heading = 360 - e.alpha;
+    }
+
+    // Only update if the change is significant (reduces micro-jitters)
+    if (Math.abs(heading - lastHeading) > 0.5) {
+        if (pointer) {
+            pointer.style.transform = `rotate(${heading}deg)`;
+            lastHeading = heading;
+        }
     }
 }
 
