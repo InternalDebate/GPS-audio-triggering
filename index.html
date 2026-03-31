@@ -3,42 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GPS Soundwalk Pro</title>
+    <title>GPS Soundwalk Classic</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="ui-overlay">
+        <h1>Park Soundwalk</h1>
+        <button id="start-btn">Start Experience</button>
+        <p id="status">Ready...</p>
+        <p id="direction-hint">Direction: --</p>
+        <div id="center-coords">Center: 0.0000, 0.0000</div>
+    </div>
+
+    <div id="compass-container">
+        <div id="compass-needle"></div>
+        <div class="label n">N</div>
+        <div class="label e">E</div>
+        <div class="label s">S</div>
+        <div class="label w">W</div>
+    </div>
+
+    <div id="crosshair">+</div>
     <div id="map"></div>
-    <div id="hud-top-left" class="hud-item">
-    <h1 id="app-title">SOUNDWALK</h1>
-    <p id="status">Ready...</p>
-</div>
-
-<div id="compass-container">
-    <div id="compass-needle"></div>
-    <div class="label n">N</div>
-    <div class="label e">E</div>
-    <div class="label s">S</div>
-    <div class="label w">W</div>
-</div>
-
-<div id="hud-bottom-center" class="hud-item">
-    <p id="direction-hint">Direction: --</p>
-</div>
-
-<div id="hud-bottom-right" class="hud-item">
-    <div id="center-coords">0.0000, 0.0000</div>
-</div>
-
-<button id="start-btn">START EXPERIENCE</button>
-
-<div id="crosshair">+</div>
-
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
-    
     <script src="script.js"></script>
 </body>
 </html>
