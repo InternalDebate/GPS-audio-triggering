@@ -151,26 +151,41 @@ function initCompass() {
         window.addEventListener('deviceorientation', compassHandler, true);
     }
 }
-let lastHeading = 0;
+
+let currentDisplayHeading = 0; // The angle currently shown on screen
+const smoothingFactor = 0.1;   // Lower = smoother/slower, Higher = snappier/jittery
 
 function compassHandler(e) {
-    let heading = 0;
+    let targetHeading = 0;
     
+    // Get raw data from sensors
     if (e.webkitCompassHeading) {
-        heading = e.webkitCompassHeading;
+        targetHeading = e.webkitCompassHeading; // iOS
     } else if (e.alpha !== null) {
-        heading = 360 - e.alpha;
+        targetHeading = 360 - e.alpha;          // Android
     }
 
-    // Only update if the change is significant (reduces micro-jitters)
-    if (Math.abs(heading - lastHeading) > 0.5) {
-        if (pointer) {
-            pointer.style.transform = `rotate(${heading}deg)`;
-            lastHeading = heading;
-        }
+    // --- SMART SMOOTHING LOGIC ---
+    
+    // 1. Handle the 360 -> 0 "Gap" 
+    // If we jump from 359 to 1, math thinks we moved -358 degrees.
+    // We adjust it so the math knows we only moved +2 degrees.
+    let diff = targetHeading - currentDisplayHeading;
+    if (diff > 180) diff -= 360;
+    if (diff < -180) diff += 360;
+
+    // 2. Apply the filter: move only a fraction of the distance
+    currentDisplayHeading += diff * smoothingFactor;
+
+    // 3. Keep the number between 0 and 360
+    if (currentDisplayHeading < 0) currentDisplayHeading += 360;
+    if (currentDisplayHeading >= 360) currentDisplayHeading -= 360;
+
+    // Update the visual triangle
+    if (pointer) {
+        pointer.style.transform = `rotate(${currentDisplayHeading}deg)`;
     }
 }
-
 // 7. COMPASS HELPER FUNCTION (For text-based directions)
 function getCompassDirection(bearing) {
     if (bearing >= -22.5 && bearing < 22.5) return 'North';
