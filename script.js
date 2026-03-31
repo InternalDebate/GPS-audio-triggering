@@ -133,68 +133,56 @@ function startTracking() {
     });
 }
 
-// 6. COMPASS/ORIENTATION LOGIC
+// --- COMPASS ENGINE VARIABLES ---
+let targetHeading = 0;      // Where the phone is actually pointing
+let currentHeading = 0;     // Where the needle is currently drawn
+const lerpFactor = 0.15;    // Smoothness: 0.01 (heavy/slow) to 1.0 (instant/jittery)
+
+const needle = document.getElementById('compass-needle');
+
+// 1. THE PERMISSION BOUNCER
 function initCompass() {
-    // Check for iOS 13+ permissions
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
-            .then(response => {
-                if (response == 'granted') {
-                    window.addEventListener('deviceorientation', compassHandler, true);
+            .then(state => {
+                if (state === 'granted') {
+                    window.addEventListener('deviceorientation', updateTarget, true);
+                    animateNeedle(); // Start the smooth loop
                 }
-            })
-            .catch(console.error);
+            });
     } else {
-        // Android or older iOS
-        window.addEventListener('deviceorientationabsolute', compassHandler, true);
-        // Fallback for older browsers
-        window.addEventListener('deviceorientation', compassHandler, true);
+        window.addEventListener('deviceorientationabsolute', updateTarget, true);
+        animateNeedle();
     }
 }
 
-let currentDisplayHeading = 0; // The angle currently shown on screen
-const smoothingFactor = 0.1;   // Lower = smoother/slower, Higher = snappier/jittery
+// 2. SENSOR INPUT
+function updateTarget(e) {
+    // iOS uses webkitCompassHeading, Android uses alpha
+    let raw = e.webkitCompassHeading || (360 - e.alpha);
+    if (raw) targetHeading = raw;
+}
 
-function compassHandler(e) {
-    let targetHeading = 0;
+// 3. THE SMOOTHING LOOP (The "Lerp")
+function animateNeedle() {
+    // Calculate the shortest distance between angles (avoids the 360-0 spasm)
+    let diff = targetHeading - currentHeading;
     
-    // Get raw data from sensors
-    if (e.webkitCompassHeading) {
-        targetHeading = e.webkitCompassHeading; // iOS
-    } else if (e.alpha !== null) {
-        targetHeading = 360 - e.alpha;          // Android
-    }
-
-    // --- SMART SMOOTHING LOGIC ---
-    
-    // 1. Handle the 360 -> 0 "Gap" 
-    // If we jump from 359 to 1, math thinks we moved -358 degrees.
-    // We adjust it so the math knows we only moved +2 degrees.
-    let diff = targetHeading - currentDisplayHeading;
     if (diff > 180) diff -= 360;
     if (diff < -180) diff += 360;
 
-    // 2. Apply the filter: move only a fraction of the distance
-    currentDisplayHeading += diff * smoothingFactor;
+    // Move the current heading a fraction of the way to the target
+    currentHeading += diff * lerpFactor;
 
-    // 3. Keep the number between 0 and 360
-    if (currentDisplayHeading < 0) currentDisplayHeading += 360;
-    if (currentDisplayHeading >= 360) currentDisplayHeading -= 360;
+    // Apply the rotation
+    needle.style.transform = `rotate(${currentHeading}deg)`;
 
-    // Update the visual triangle
-    if (pointer) {
-        pointer.style.transform = `rotate(${currentDisplayHeading}deg)`;
-    }
+    // Run this function again on the next screen frame (~60fps)
+    requestAnimationFrame(animateNeedle);
 }
-// 7. COMPASS HELPER FUNCTION (For text-based directions)
-function getCompassDirection(bearing) {
-    if (bearing >= -22.5 && bearing < 22.5) return 'North';
-    if (bearing >= 22.5 && bearing < 67.5) return 'Northeast';
-    if (bearing >= 67.5 && bearing < 112.5) return 'East';
-    if (bearing >= 112.5 && bearing < 157.5) return 'Southeast';
-    if (bearing >= 157.5 || bearing < -157.5) return 'South';
-    if (bearing >= -157.5 && bearing < -112.5) return 'Southwest';
-    if (bearing >= -112.5 && bearing < -67.5) return 'West';
-    if (bearing >= -67.5 && bearing < -22.5) return 'Northwest';
-    return 'Toward Target';
-}
+
+// --- INTEGRATION WITH YOUR START BUTTON ---
+document.getElementById('start-btn').addEventListener('click', function() {
+    // ... your existing audio/GPS code ...
+    initCompass(); 
+});
