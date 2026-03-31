@@ -31,7 +31,8 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 const centerDisplay = document.getElementById('center-coords');
-const pointer = document.getElementById('compass-pointer'); // For the visual compass
+const pointer = document.getElementById('compass-pointer'); 
+const needle = document.getElementById('compass-needle');
 
 function updateCenterCoords() {
     const center = map.getCenter();
@@ -62,7 +63,31 @@ soundZones.forEach(zone => {
     });
 });
 
-// 4. START BUTTON LOGIC
+// 4. AUDIO ENGINE
+function checkAudioZones(userPoint) {
+    let activeZoneName = "No zone detected...";
+    
+    soundZones.forEach(zone => {
+        const poiPoint = turf.point([zone.lng, zone.lat]);
+        const distance = turf.distance(userPoint, poiPoint, {units: 'meters'});
+
+        if (distance <= zone.radius) {
+            if (!zone.howl.playing()) zone.howl.play();
+            zone.howl.fade(zone.howl.volume(), 1.0, 2000); 
+            activeZoneName = `Playing: ${zone.name}`;
+        } else {
+            zone.howl.fade(zone.howl.volume(), 0, 2000);
+            // Pause after fade out to save battery
+            if(zone.howl.volume() === 0 && zone.howl.playing()) {
+                zone.howl.pause();
+            }
+        }
+    });
+    
+    document.getElementById('status').innerText = activeZoneName;
+}
+
+// 5. START BUTTON LOGIC
 document.getElementById('start-btn').addEventListener('click', function() {
     this.style.display = 'none';
     document.getElementById('status').innerText = "Walk into a blue circle...";
@@ -72,82 +97,79 @@ document.getElementById('start-btn').addEventListener('click', function() {
     }
 
     startTracking();
-    initCompass(); // Integrated: Starts the magnetometer/gyroscope logic
+    initCompass(); 
 });
 
-// 5. GPS TRACKING ENGINE
+// 6. GPS TRACKING & GUIDANCE ENGINE
 function startTracking() {
     const directionDisplay = document.getElementById('direction-hint');
+
+    function updateGuidance(uLat, uLng) {
+        const center = map.getCenter();
+        if (!center || !uLat || uLat === 0) return;
+
+        const userPoint = turf.point([uLng, uLat]);
+        const centerPoint = turf.point([center.lng, center.lat]);
+
+        // Calculate Distance to the Crosshair
+        const distance = turf.distance(userPoint, centerPoint, {units: 'meters'});
+
+        // Calculate Bearing from User to Crosshair
+        const bearing = turf.rhumbBearing(userPoint, centerPoint);
+        const compassDir = getCompassDirection(bearing);
+
+        // Update the Direction UI
+        directionDisplay.innerText = `The crosshair is ${compassDir} of you (${Math.round(distance)}m)`;
+        
+        // Trigger Audio Logic based on User Position
+        checkAudioZones(userPoint);
+    }
 
     navigator.geolocation.watchPosition((pos) => {
         const uLat = pos.coords.latitude;
         const uLng = pos.coords.longitude;
-
         userMarker.setLatLng([uLat, uLng]);
-        const userPoint = turf.point([uLng, uLat]);
-        let activeZoneName = "No zone detected...";
         
-        let nearestZone = null;
-        let shortestDistance = Infinity;
-
-        soundZones.forEach(zone => {
-            const poiPoint = turf.point([zone.lng, zone.lat]);
-            const distance = turf.distance(userPoint, poiPoint, {units: 'meters'});
-
-            if (distance <= zone.radius) {
-                if (!zone.howl.playing()) zone.howl.play();
-                zone.howl.fade(zone.howl.volume(), 1.0, 2000); 
-                activeZoneName = `Playing: ${zone.name}`;
-            } else {
-                zone.howl.fade(zone.howl.volume(), 0, 2000);
-                if (zone.howl.volume() === 0 && zone.howl.playing()) {
-                    zone.howl.pause();
-                }
-            }
-
-            if (distance < shortestDistance) {
-                shortestDistance = distance;
-                nearestZone = zone;
-            }
-        });
-
-        if (nearestZone && directionDisplay) {
-            if (shortestDistance <= nearestZone.radius) {
-                directionDisplay.innerText = "You have arrived!";
-            } else {
-                const poiPoint = turf.point([nearestZone.lng, nearestZone.lat]);
-                const bearing = turf.rhumbBearing(userPoint, poiPoint);
-                const compassDir = getCompassDirection(bearing);
-                directionDisplay.innerText = `Walk ${compassDir} to ${nearestZone.name} (${Math.round(shortestDistance)}m)`;
-            }
-        }
-
-        document.getElementById('status').innerText = activeZoneName;
-
+        updateGuidance(uLat, uLng);
     }, (err) => {
         console.error("GPS Error:", err);
-        document.getElementById('status').innerText = "GPS Error. Check your settings.";
+        document.getElementById('status').innerText = "GPS Error. Check settings.";
     }, { 
-        enableHighAccuracy: true, 
+        enableHighAccuracy: true,
         maximumAge: 0 
+    });
+
+    map.on('move', () => {
+        const coords = userMarker.getLatLng();
+        updateGuidance(coords.lat, coords.lng);
     });
 }
 
-// --- COMPASS ENGINE VARIABLES ---
-let targetHeading = 0;      // Where the phone is actually pointing
-let currentHeading = 0;     // Where the needle is currently drawn
-const lerpFactor = 0.15;    // Smoothness: 0.01 (heavy/slow) to 1.0 (instant/jittery)
+// 7. DIRECTION HELPERS
+function getCompassDirection(bearing) {
+    if (bearing >= -22.5 && bearing < 22.5) return 'North';
+    if (bearing >= 22.5 && bearing < 67.5) return 'Northeast';
+    if (bearing >= 67.5 && bearing < 112.5) return 'East';
+    if (bearing >= 112.5 && bearing < 157.5) return 'Southeast';
+    if (bearing >= 157.5 || bearing < -157.5) return 'South';
+    if (bearing >= -157.5 && bearing < -112.5) return 'Southwest';
+    if (bearing >= -112.5 && bearing < -67.5) return 'West';
+    if (bearing >= -67.5 && bearing < -22.5) return 'Northwest';
+    return 'Ahead';
+}
 
-const needle = document.getElementById('compass-needle');
+// 8. COMPASS ENGINE
+let targetHeading = 0;      
+let currentHeading = 0;     
+const lerpFactor = 0.15;    
 
-// 1. THE PERMISSION BOUNCER
 function initCompass() {
-    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+    if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
             .then(state => {
                 if (state === 'granted') {
                     window.addEventListener('deviceorientation', updateTarget, true);
-                    animateNeedle(); // Start the smooth loop
+                    animateNeedle();
                 }
             });
     } else {
@@ -156,33 +178,20 @@ function initCompass() {
     }
 }
 
-// 2. SENSOR INPUT
 function updateTarget(e) {
-    // iOS uses webkitCompassHeading, Android uses alpha
     let raw = e.webkitCompassHeading || (360 - e.alpha);
     if (raw) targetHeading = raw;
 }
 
-// 3. THE SMOOTHING LOOP (The "Lerp")
 function animateNeedle() {
-    // Calculate the shortest distance between angles (avoids the 360-0 spasm)
-    let diff = targetHeading - currentHeading;
+    if (!needle) return;
     
+    let diff = targetHeading - currentHeading;
     if (diff > 180) diff -= 360;
     if (diff < -180) diff += 360;
 
-    // Move the current heading a fraction of the way to the target
     currentHeading += diff * lerpFactor;
-
-    // Apply the rotation
     needle.style.transform = `rotate(${currentHeading}deg)`;
 
-    // Run this function again on the next screen frame (~60fps)
     requestAnimationFrame(animateNeedle);
 }
-
-// --- INTEGRATION WITH YOUR START BUTTON ---
-document.getElementById('start-btn').addEventListener('click', function() {
-    // ... your existing audio/GPS code ...
-    initCompass(); 
-});
