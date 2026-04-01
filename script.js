@@ -11,6 +11,10 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red' }).addTo(map);
 
+//blue radar dot that orbits the user
+const satelliteMarker = L.divIcon({ className: 'radar-dot', iconSize: [12, 12] });
+const radarMarker = L.marker([0, 0], { icon: satelliteMarker, interactive: false }).addTo(map);
+
 // 3. AUDIO PREP
 soundZones.forEach(zone => {
     L.circle([zone.lat, zone.lng], { radius: zone.radius, color: '#3498db' }).addTo(map);
