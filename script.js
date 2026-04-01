@@ -38,25 +38,35 @@ soundZones.forEach(zone => {
 function updateGuidance(uLat, uLng) {
     if (!uLat || uLat === 0) return;
 
+    // Convert coordinates to Turf point for distance calculations
     const userPoint = turf.point([uLng, uLat]);
 
-    // --- RADAR LOGIC (Triangle) ---
+    // --- 1. RADAR LOGIC (Triangle) ---
     let closestZone = soundZones[0];
     let minDistance = Infinity;
+
+    // Scan all zones to find the nearest one
     soundZones.forEach(zone => {
         const zonePoint = turf.point([zone.lng, zone.lat]);
         const d = turf.distance(userPoint, zonePoint, {units: 'meters'});
-        if (d < minDistance) { minDistance = d; closestZone = zone; }
+        if (d < minDistance) {
+            minDistance = d;
+            closestZone = zone;
+        }
     });
 
+    // Move the radar marker to the user's current position
     radarMarker.setLatLng([uLat, uLng]);
+
+    // Calculate angle to the closest zone and rotate the CSS triangle
     const angleToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
     const triangleElement = document.querySelector('.radar-triangle');
     if (triangleElement) {
+        // Rotates the triangle and keeps it offset slightly from the red dot
         triangleElement.style.transform = `rotate(${angleToZone}deg) translateY(-25px)`;
     }
 
-    // --- SIMPLE ON/OFF AUDIO LOGIC ---
+    // --- 2. AUDIO TRIGGER LOGIC (Accurate Fades) ---
     let activeName = "No zone detected...";
 
     soundZones.forEach(zone => {
@@ -64,23 +74,50 @@ function updateGuidance(uLat, uLng) {
         const zDist = turf.distance(userPoint, poiPoint, {units: 'meters'});
 
         if (zDist <= zone.radius) {
+            // --- USER IS INSIDE THE ZONE ---
             activeName = `Playing: ${zone.name}`;
             
-            // If we just entered, play immediately
+            // GATEKEEPER: Only trigger if we weren't already inside (prevents jitter resets)
             if (!zone.isInside) {
-                zone.isInside = true;
-                zone.howl.play();
-                console.log("Audio ON:", zone.name);
+                zone.isInside = true; // LOCK the state
+                
+                // 1. Cancel any pending fade-outs
+                zone.howl.off('fade'); 
+                
+                // 2. Start playing if it's currently stopped/paused
+                if (!zone.howl.playing()) zone.howl.play();
+                
+                // 3. Fade from current volume to 1.0 over 2 seconds
+                zone.howl.fade(zone.howl.volume(), 1.0, 2000);
+                console.log("Fade In Triggered for:", zone.name);
             }
         } else {
-            // If we just exited, stop immediately
+            // --- USER IS OUTSIDE THE ZONE ---
+            
+            // GATEKEEPER: Only trigger if we were previously inside
             if (zone.isInside) {
-                zone.isInside = false;
-                zone.howl.stop(); // Stop resets the track; use .pause() if you want it to resume where it left off
-                console.log("Audio OFF:", zone.name);
+                zone.isInside = false; // UNLOCK the state
+                
+                // 1. Cancel any pending fade-ins
+                zone.howl.off('fade'); 
+                
+                // 2. Fade from current volume down to 0 over 2 seconds
+                zone.howl.fade(zone.howl.volume(), 0, 2000);
+                console.log("Fade Out Triggered for:", zone.name);
+
+                // 3. Cleanup: Once the fade hits zero, pause audio to save device resources
+                zone.howl.once('fade', () => {
+                    // Check volume again to ensure we don't pause if user ran back in during fade
+                    if (!zone.isInside && zone.howl.volume() === 0) {
+                        zone.howl.pause();
+                        console.log("Audio Paused:", zone.name);
+                    }
+                });
             }
         }
     });
+
+    // Update the UI status text
     document.getElementById('status').innerText = activeName;
 }
 
