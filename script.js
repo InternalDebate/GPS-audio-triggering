@@ -15,7 +15,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red' }).addTo(map);
 
-//blue radar dot that orbits the user
+// --- blue radar dot that orbits the user ---
 const satelliteMarker = L.divIcon({ className: 'radar-dot', iconSize: [12, 12] });
 const radarMarker = L.marker([0, 0], { icon: satelliteMarker, interactive: false }).addTo(map);
 
@@ -69,19 +69,19 @@ function updateGuidance(uLat, uLng) {
         if (zDist <= zone.radius) {
             activeName = `Playing: ${zone.name}`;
             
-            // FADE IN: Only if not already playing at full volume
+            // --- FADE IN: Only if not already playing at full volume ---
             if (zone.howl.volume() < 1.0) {
                 if (!zone.howl.playing()) zone.howl.play();
-                // 3000ms = 3 seconds
+                // --- 3000ms = 3 seconds ---
                 zone.howl.fade(zone.howl.volume(), 1.0, 3000);
             }
         } else {
-            // FADE OUT: Only if volume is currently above 0
+            // --- FADE OUT: Only if volume is currently above 0 ---
             if (zone.howl.volume() > 0) {
-                // 5000ms = 5 seconds
+                // --- 5000ms = 5 seconds ---
                 zone.howl.fade(zone.howl.volume(), 0, 5000);
 
-                // Stop the audio once the 5s fade is finished to prevent "ghost" sounds
+                // --- Stop the audio once the 5s fade is finished to prevent "ghost" sounds ---
                 zone.howl.once('fade', () => {
                     if (zone.howl.volume() === 0) {
                         zone.howl.pause();
@@ -107,16 +107,16 @@ function initCompass() {
 
     // 1. Setup the Listener
     const handleMotion = (e) => {
-        // Try iOS property first, then Android absolute, then standard alpha
+        // --- Try iOS property first, then Android absolute, then standard alpha ---
         let heading = e.webkitCompassHeading || e.alpha;
         
         if (e.absolute === false && e.webkitCompassHeading === undefined) {
-            // If it's not absolute and not iOS, alpha might be relative (less useful)
-            // but we'll use it as a last resort.
+            // --- If it's not absolute and not iOS, alpha might be relative (less useful) ---
+            // --- but we'll use it as a last resort. ---
         }
 
         if (heading !== null && heading !== undefined) {
-            // Android alpha is counter-clockwise, so we flip it
+            // --- Android alpha is counter-clockwise, so we flip it ---
             targetHeading = e.webkitCompassHeading ? heading : 360 - heading;
         }
     };
@@ -131,9 +131,9 @@ function initCompass() {
             })
             .catch(console.error);
     } else {
-        // Android / Desktop
+        // --- Android / Desktop ---
         window.addEventListener('deviceorientationabsolute', handleMotion, true);
-        // Fallback for older devices
+        // --- Fallback for older devices ---
         window.addEventListener('deviceorientation', handleMotion, true);
     }
 
@@ -145,7 +145,7 @@ function initCompass() {
 
         currentHeading += diff * 0.15;
 
-        // Apply rotation
+        // --- Apply rotation ---
         needleElement.style.transform = `translate(-50%, -50%) rotate(${currentHeading}deg)`;
         
         requestAnimationFrame(animate);
@@ -164,15 +164,15 @@ function getCompassDirection(b) {
     return 'Northwest';
 }
 
-// Global variable to check if experience started
+// --- Global variable to check if experience started ---
 let experienceStarted = false;
 
-// Start GPS watching IMMEDIATELY on load
+// --- Start GPS watching IMMEDIATELY on load ---
 const watchId = navigator.geolocation.watchPosition(pos => {
     const { latitude, longitude } = pos.coords;
     userMarker.setLatLng([latitude, longitude]);
     
-    // Only update guidance/sounds if the user has clicked start
+    // --- Only update guidance/sounds if the user has clicked start ---
     if (experienceStarted) {
         updateGuidance(latitude, longitude);
     }
@@ -187,7 +187,7 @@ document.getElementById('start-btn').addEventListener('click', function() {
     if (Howler.ctx.state === 'suspended') Howler.ctx.resume();
     initCompass();
     
-    // Trigger one update immediately so it doesn't wait for next GPS move
+    // --- Trigger one update immediately so it doesn't wait for next GPS move ---
     const p = userMarker.getLatLng();
     if (p.lat !== 0) updateGuidance(p.lat, p.lng);
 });
@@ -204,12 +204,12 @@ map.on('move', () => {
 document.getElementById('locate-btn').addEventListener('click', () => {
     const userPos = userMarker.getLatLng();
     
-    // Log to console so you can debug on your phone (if using remote tools)
+    // --- Log to console so you can debug on your phone (if using remote tools) ---
     console.log("Locate button pressed. Current marker pos:", userPos);
 
-    // Check if the marker is actually valid
+    // --- Check if the marker is actually valid ---
     if (userPos && (userPos.lat !== 0 || userPos.lng !== 0)) {
-        // Use a simpler view jump if flyTo is being finicky
+        // --- Use a simpler view jump if flyTo is being finicky ---
         map.setView([userPos.lat, userPos.lng], 18, {
             animate: true,
             pan: {
@@ -217,7 +217,7 @@ document.getElementById('locate-btn').addEventListener('click', () => {
             }
         });
     } else {
-        // If the marker is still at 0,0, try one last direct GPS pull
+        // --- If the marker is still at 0,0, try one last direct GPS pull ---
         navigator.geolocation.getCurrentPosition(pos => {
             const freshPos = [pos.coords.latitude, pos.coords.longitude];
             userMarker.setLatLng(freshPos);
