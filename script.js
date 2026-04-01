@@ -4,7 +4,9 @@ const soundZones = [
     { name: "Spot 2", lat: 52.090111, lng: 5.131919, radius: 20, audioFile: 'Nature noise - Echoes - PIEP.mp3' },
     { name: "Spot 3", lat: 52.090944, lng: 5.133195, radius: 20, audioFile: 'Nature noise - Echoes - WATERLEIDING.mp3' },
     { name: "Spot 4", lat: 51.5867, lng: 4.7785, radius: 20, audioFile: 'Nature noise - Echoes - DUIF.mp3' },
-    { name: "Spot 5", lat: 51.5774, lng: 4.7563, radius: 20, audioFile: 'Nature noise - Echoes - DUIF.mp3' }
+    { name: "Spot 5", lat: 51.5774, lng: 4.7563, radius: 20, audioFile: 'Nature noise - Echoes - DUIF.mp3' },
+    { name: "Spot 6", lat: 51.8150, lng: 4.9968, radius: 20, audioFile: 'Nature noise - Echoes - DUIF.mp3' },
+    { name: "Spot 7", lat: 51.5893, lng: 4.7861, radius: 20, audioFile: 'Nature noise - Echoes - DUIF.mp3' }
 ];
 
 // 2. MAP SETUP
