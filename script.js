@@ -52,7 +52,7 @@ function updateGuidance(uLat, uLng) {
         triangleElement.style.transform = `rotate(${angleToZone}deg) translateY(-25px)`;
     }
 
-    // --- UPDATED AUDIO LOGIC (State Protected) ---
+    // --- FIXED AUDIO LOGIC ---
     let activeName = "No zone detected...";
 
     soundZones.forEach(zone => {
@@ -60,23 +60,35 @@ function updateGuidance(uLat, uLng) {
         const zDist = turf.distance(userPoint, poiPoint, {units: 'meters'});
 
         if (zDist <= zone.radius) {
-            // USER JUST ENTERED
             activeName = `Playing: ${zone.name}`;
+            
+            // Trigger Fade In ONLY if we aren't already inside
             if (!zone.isInside) {
                 zone.isInside = true;
+                
+                // Stop any current fade-outs immediately
+                zone.howl.off('fade'); 
+                
                 if (!zone.howl.playing()) zone.howl.play();
-                zone.howl.fade(zone.howl.volume(), 1.0, 3000); // 3s Fade In
+                zone.howl.fade(zone.howl.volume(), 1.0, 3000); 
+                console.log("Fading in:", zone.name);
             }
         } else {
-            // USER JUST EXITED
+            // Trigger Fade Out ONLY if we were previously inside
             if (zone.isInside) {
                 zone.isInside = false;
-                zone.howl.fade(zone.howl.volume(), 0, 5000); // 5s Fade Out
                 
-                // Hard-stop the audio once fade is finished
+                // Stop any current fade-ins immediately
+                zone.howl.off('fade'); 
+                
+                zone.howl.fade(zone.howl.volume(), 0, 5000);
+                console.log("Fading out:", zone.name);
+
+                // Use the 'once' listener correctly to pause after fade
                 zone.howl.once('fade', () => {
-                    if (!zone.isInside) { // Double check they haven't re-entered
+                    if (!zone.isInside && zone.howl.volume() === 0) {
                         zone.howl.pause();
+                        console.log("Paused:", zone.name);
                     }
                 });
             }
