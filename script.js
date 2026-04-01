@@ -23,22 +23,43 @@ soundZones.forEach(zone => {
 
 // 4. GUIDANCE ENGINE
 function updateGuidance(uLat, uLng) {
-    const center = map.getCenter();
-    const directionDisplay = document.getElementById('direction-hint');
-    
     if (!uLat || uLat === 0) return;
 
     const userPoint = turf.point([uLng, uLat]);
+    const center = map.getCenter();
     const centerPoint = turf.point([center.lng, center.lat]);
 
-    // Distance & Direction to Crosshair
+    // --- RADAR LOGIC ---
+    // 1. Find the closest zone
+    let closestZone = soundZones[0];
+    let minDistance = Infinity;
+
+    soundZones.forEach(zone => {
+        const zonePoint = turf.point([zone.lng, zone.lat]);
+        const d = turf.distance(userPoint, zonePoint, {units: 'meters'});
+        if (d < minDistance) {
+            minDistance = d;
+            closestZone = zone;
+        }
+    });
+
+    // 2. Calculate the "Orbit" position (15 meters away towards the zone)
+    const bearingToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
+    const satellitePos = turf.destination(userPoint, 15, bearingToZone, {units: 'meters'});
+    
+    // 3. Move the blue radar marker
+    if (window.radarMarker) {
+        radarMarker.setLatLng([satellitePos.geometry.coordinates[1], satellitePos.geometry.coordinates[0]]);
+    }
+
+    // --- EXISTING: CROSSHAIR LOGIC ---
     const dist = turf.distance(userPoint, centerPoint, {units: 'meters'});
     const bearing = turf.rhumbBearing(userPoint, centerPoint);
     const dir = getCompassDirection(bearing);
 
-    directionDisplay.innerText = `Crosshair is ${dir} (${Math.round(dist)}m)`;
+    document.getElementById('direction-hint').innerText = `Crosshair is ${dir} (${Math.round(dist)}m)`;
 
-    // Check Audio Zones
+    // --- EXISTING: AUDIO ZONES ---
     let activeName = "No zone detected...";
     soundZones.forEach(zone => {
         const poiPoint = turf.point([zone.lng, zone.lat]);
@@ -54,7 +75,7 @@ function updateGuidance(uLat, uLng) {
     document.getElementById('status').innerText = activeName;
 }
 
-// 5. COMPASS LOGIC
+
 // 5. COMPASS LOGIC
 let targetHeading = 0;
 let currentHeading = 0;
