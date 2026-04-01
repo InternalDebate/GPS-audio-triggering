@@ -39,7 +39,7 @@ function updateGuidance(uLat, uLng) {
 
     soundZones.forEach(zone => {
         const zonePoint = turf.point([zone.lng, zone.lat]);
-        const d = turf.distance(userPoint, zonePoint, {units: 'meters'});
+        const d = turf.distance(userPoint, zonePoint, { units: 'meters' });
         if (d < minDistance) {
             minDistance = d;
             closestZone = zone;
@@ -47,14 +47,14 @@ function updateGuidance(uLat, uLng) {
     });
 
     const bearingToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
-    const satellitePos = turf.destination(userPoint, 10, bearingToZone, {units: 'meters'});
-    
+    const satellitePos = turf.destination(userPoint, 10, bearingToZone, { units: 'meters' });
+
     if (radarMarker) {
         radarMarker.setLatLng([satellitePos.geometry.coordinates[1], satellitePos.geometry.coordinates[0]]);
     }
 
     // --- CROSSHAIR LOGIC ---
-    const dist = turf.distance(userPoint, centerPoint, {units: 'meters'});
+    const dist = turf.distance(userPoint, centerPoint, { units: 'meters' });
     const bearing = turf.rhumbBearing(userPoint, centerPoint);
     const dir = getCompassDirection(bearing);
     document.getElementById('direction-hint').innerText = `Crosshair is ${dir} (${Math.round(dist)}m)`;
@@ -64,11 +64,11 @@ function updateGuidance(uLat, uLng) {
 
     soundZones.forEach(zone => {
         const poiPoint = turf.point([zone.lng, zone.lat]);
-        const zDist = turf.distance(userPoint, poiPoint, {units: 'meters'});
+        const zDist = turf.distance(userPoint, poiPoint, { units: 'meters' });
 
         if (zDist <= zone.radius) {
             activeName = `Playing: ${zone.name}`;
-            
+
             // --- FADE IN: Only if not already playing at full volume ---
             if (zone.howl.volume() < 1.0) {
                 if (!zone.howl.playing()) zone.howl.play();
@@ -99,7 +99,7 @@ let currentHeading = 0;
 
 function initCompass() {
     const needleElement = document.getElementById('compass-needle');
-    
+
     if (!needleElement) {
         console.error("Compass needle element missing!");
         return;
@@ -109,7 +109,7 @@ function initCompass() {
     const handleMotion = (e) => {
         // --- Try iOS property first, then Android absolute, then standard alpha ---
         let heading = e.webkitCompassHeading || e.alpha;
-        
+
         if (e.absolute === false && e.webkitCompassHeading === undefined) {
             // --- If it's not absolute and not iOS, alpha might be relative (less useful) ---
             // --- but we'll use it as a last resort. ---
@@ -147,7 +147,7 @@ function initCompass() {
 
         // --- Apply rotation ---
         needleElement.style.transform = `translate(-50%, -50%) rotate(${currentHeading}deg)`;
-        
+
         requestAnimationFrame(animate);
     }
     animate();
@@ -171,7 +171,7 @@ let experienceStarted = false;
 const watchId = navigator.geolocation.watchPosition(pos => {
     const { latitude, longitude } = pos.coords;
     userMarker.setLatLng([latitude, longitude]);
-    
+
     // --- Only update guidance/sounds if the user has clicked start ---
     if (experienceStarted) {
         updateGuidance(latitude, longitude);
@@ -181,12 +181,12 @@ const watchId = navigator.geolocation.watchPosition(pos => {
     maximumAge: 0
 });
 
-document.getElementById('start-btn').addEventListener('click', function() {
+document.getElementById('start-btn').addEventListener('click', function () {
     this.style.display = 'none';
     experienceStarted = true;
     if (Howler.ctx.state === 'suspended') Howler.ctx.resume();
     initCompass();
-    
+
     // --- Trigger one update immediately so it doesn't wait for next GPS move ---
     const p = userMarker.getLatLng();
     if (p.lat !== 0) updateGuidance(p.lat, p.lng);
@@ -195,7 +195,7 @@ document.getElementById('start-btn').addEventListener('click', function() {
 map.on('move', () => {
     const p = userMarker.getLatLng();
     if (experienceStarted) updateGuidance(p.lat, p.lng);
-    
+
     const c = map.getCenter();
     document.getElementById('center-coords').innerText = `Center: ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
 });
@@ -203,7 +203,7 @@ map.on('move', () => {
 // 7. LOCATE USER LOGIC 
 document.getElementById('locate-btn').addEventListener('click', () => {
     const userPos = userMarker.getLatLng();
-    
+
     // --- Log to console so you can debug on your phone (if using remote tools) ---
     console.log("Locate button pressed. Current marker pos:", userPos);
 
