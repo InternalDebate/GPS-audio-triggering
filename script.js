@@ -8,6 +8,10 @@ const soundZones = [
 
 ];
 
+let smoothLat = 0;
+let smoothLng = 0;
+const smoothingFactor = 0.15; // 1.0 is instant, 0.01 is very slow/smooth. 0.15 is a sweet spot.
+
 // 2. MAP SETUP
 const map = L.map('map').setView([soundZones[0].lat, soundZones[0].lng], 16);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -154,20 +158,31 @@ function getCompassDirection(b) {
 // --- Global variable to check if experience started ---
 let experienceStarted = false;
 
-// --- Start GPS watching IMMEDIATELY on load ---
+// --- Start GPS watching with Smoothing ---
 const watchId = navigator.geolocation.watchPosition(pos => {
     const { latitude, longitude } = pos.coords;
-    userMarker.setLatLng([latitude, longitude]);
 
-    // --- Only update guidance/sounds if the user has clicked start ---
-    if (experienceStarted) {
-        updateGuidance(latitude, longitude);
+    // If this is the first time we get a signal, jump there immediately
+    if (smoothLat === 0) {
+        smoothLat = latitude;
+        smoothLng = longitude;
     }
-}, err => console.error("GPS Watch Error:", err), {
-    enableHighAccuracy: true,
-    maximumAge: 0
-});
 
+    // Instead of jumping, we "drift" toward the new coordinate
+    // New Position = Old Position + (Difference * SmoothingFactor)
+    smoothLat += (latitude - smoothLat) * smoothingFactor;
+    smoothLng += (longitude - smoothLng) * smoothingFactor;
+
+    userMarker.setLatLng([smoothLat, smoothLng]);
+
+    if (experienceStarted) {
+        updateGuidance(smoothLat, smoothLng);
+    }
+}, err => console.error(err), {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 5000
+});
 document.getElementById('start-btn').addEventListener('click', function () {
     this.style.display = 'none';
     experienceStarted = true;
