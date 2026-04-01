@@ -141,3 +141,18 @@ map.on('move', () => {
     const c = map.getCenter();
     document.getElementById('center-coords').innerText = `Center: ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
 });
+
+// 7. LOCATE USER LOGIC
+document.getElementById('locate-btn').addEventListener('click', () => {
+    const userPos = userMarker.getLatLng();
+    
+    // Check if we actually have a valid location yet
+    if (userPos.lat !== 0 || userPos.lng !== 0) {
+        map.flyTo(userPos, 18, {
+            animate: true,
+            duration: 1.5 // seconds
+        });
+    } else {
+        alert("Waiting for GPS signal...");
+    }
+});
