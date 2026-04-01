@@ -158,19 +158,30 @@ map.on('move', () => {
     document.getElementById('center-coords').innerText = `Center: ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
 });
 
-// 7. LOCATE USER LOGIC
+// 7. LOCATE USER LOGIC 
 document.getElementById('locate-btn').addEventListener('click', () => {
     const userPos = userMarker.getLatLng();
     
-    if (userPos.lat !== 0 || userPos.lng !== 0) {
-        map.flyTo(userPos, 18, { animate: true, duration: 1.5 });
+    // Log to console so you can debug on your phone (if using remote tools)
+    console.log("Locate button pressed. Current marker pos:", userPos);
+
+    // Check if the marker is actually valid
+    if (userPos && (userPos.lat !== 0 || userPos.lng !== 0)) {
+        // Use a simpler view jump if flyTo is being finicky
+        map.setView([userPos.lat, userPos.lng], 18, {
+            animate: true,
+            pan: {
+                duration: 1.2
+            }
+        });
     } else {
-        // If marker is still at 0,0, try a one-time high-accuracy grab
+        // If the marker is still at 0,0, try one last direct GPS pull
         navigator.geolocation.getCurrentPosition(pos => {
-            const newPos = [pos.coords.latitude, pos.coords.longitude];
-            userMarker.setLatLng(newPos);
-            map.flyTo(newPos, 18, { animate: true, duration: 1.5 });
-        }, (err) => alert("Please enable GPS to use this feature."), 
-        { enableHighAccuracy: true });
+            const freshPos = [pos.coords.latitude, pos.coords.longitude];
+            userMarker.setLatLng(freshPos);
+            map.setView(freshPos, 18, { animate: true });
+        }, (err) => {
+            alert("Location not found. Please ensure GPS is enabled and you've allowed permissions.");
+        }, { enableHighAccuracy: true });
     }
 });
