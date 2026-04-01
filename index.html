@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,21 +8,27 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <div id="ui-overlay">
+    <div id="header-title">
         <h1>Layers of the Maliebaan</h1>
-        <button id="start-btn">Start Experience</button>
-        <p id="status">Ready...</p>
-        <p id="direction-hint">Direction: --</p>
-        <div id="center-coords">Center: 0.0000, 0.0000</div>
     </div>
 
-    <div id="compass-container">
-        <div id="compass-needle"></div>
-        <div class="label n">N</div>
-        <div class="label e">E</div>
-        <div class="label s">S</div>
-        <div class="label w">W</div>
+    <div id="right-panel">
+        <div id="compass-container">
+            <div id="compass-needle"></div>
+            <div class="label n">N</div>
+            <div class="label e">E</div>
+            <div class="label s">S</div>
+            <div class="label w">W</div>
+        </div>
+
+        <div id="status-panel">
+            <button id="start-btn">Start Experience</button>
+            <p id="status">Ready...</p>
+            <p id="direction-hint">Direction: --</p>
+            <div id="center-coords">Center: 0.0000, 0.0000</div>
+        </div>
     </div>
 
     <div id="crosshair">+</div>
@@ -32,4 +39,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
