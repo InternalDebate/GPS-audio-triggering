@@ -21,7 +21,13 @@ const radarMarker = L.marker([0, 0], { icon: satelliteMarker, interactive: false
 // 3. AUDIO PREP
 soundZones.forEach(zone => {
     L.circle([zone.lat, zone.lng], { radius: zone.radius, color: '#3498db' }).addTo(map);
-    zone.howl = new Howl({ src: [zone.audioFile], loop: true, volume: 0, html5: true });
+    zone.howl = new Howl({ 
+        src: [zone.audioFile], 
+        loop: true, 
+        volume: 0, 
+        html5: true 
+    });
+    zone.isInside = false; // Track the state of the user relative to this zone
 });
 
 // 4. GUIDANCE ENGINE
@@ -29,60 +35,47 @@ function updateGuidance(uLat, uLng) {
     if (!uLat || uLat === 0) return;
 
     const userPoint = turf.point([uLng, uLat]);
-    const center = map.getCenter();
-    const centerPoint = turf.point([center.lng, center.lat]);
 
-    // --- RADAR LOGIC ---
+    // --- RADAR LOGIC (Triangle) ---
     let closestZone = soundZones[0];
     let minDistance = Infinity;
-
     soundZones.forEach(zone => {
         const zonePoint = turf.point([zone.lng, zone.lat]);
-        const d = turf.distance(userPoint, zonePoint, { units: 'meters' });
-        if (d < minDistance) {
-            minDistance = d;
-            closestZone = zone;
-        }
+        const d = turf.distance(userPoint, zonePoint, {units: 'meters'});
+        if (d < minDistance) { minDistance = d; closestZone = zone; }
     });
 
-    const bearingToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
-    const satellitePos = turf.destination(userPoint, 10, bearingToZone, { units: 'meters' });
-
-    if (radarMarker) {
-        radarMarker.setLatLng([satellitePos.geometry.coordinates[1], satellitePos.geometry.coordinates[0]]);
+    radarMarker.setLatLng([uLat, uLng]);
+    const angleToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
+    const triangleElement = document.querySelector('.radar-triangle');
+    if (triangleElement) {
+        triangleElement.style.transform = `rotate(${angleToZone}deg) translateY(-25px)`;
     }
 
-    // --- CROSSHAIR LOGIC ---
-    const dist = turf.distance(userPoint, centerPoint, { units: 'meters' });
-    const bearing = turf.rhumbBearing(userPoint, centerPoint);
-    const dir = getCompassDirection(bearing);
-    document.getElementById('direction-hint').innerText = `Crosshair is ${dir} (${Math.round(dist)}m)`;
-
-    // --- UPDATED AUDIO ZONES: 3s Fade In / 5s Fade Out ---
+    // --- UPDATED AUDIO LOGIC (State Protected) ---
     let activeName = "No zone detected...";
 
     soundZones.forEach(zone => {
         const poiPoint = turf.point([zone.lng, zone.lat]);
-        const zDist = turf.distance(userPoint, poiPoint, { units: 'meters' });
+        const zDist = turf.distance(userPoint, poiPoint, {units: 'meters'});
 
         if (zDist <= zone.radius) {
+            // USER JUST ENTERED
             activeName = `Playing: ${zone.name}`;
-
-            // --- FADE IN: Only if not already playing at full volume ---
-            if (zone.howl.volume() < 1.0) {
+            if (!zone.isInside) {
+                zone.isInside = true;
                 if (!zone.howl.playing()) zone.howl.play();
-                // --- 3000ms = 3 seconds ---
-                zone.howl.fade(zone.howl.volume(), 1.0, 3000);
+                zone.howl.fade(zone.howl.volume(), 1.0, 3000); // 3s Fade In
             }
         } else {
-            // --- FADE OUT: Only if volume is currently above 0 ---
-            if (zone.howl.volume() > 0) {
-                // --- 5000ms = 5 seconds ---
-                zone.howl.fade(zone.howl.volume(), 0, 5000);
-
-                // --- Stop the audio once the 5s fade is finished to prevent "ghost" sounds ---
+            // USER JUST EXITED
+            if (zone.isInside) {
+                zone.isInside = false;
+                zone.howl.fade(zone.howl.volume(), 0, 5000); // 5s Fade Out
+                
+                // Hard-stop the audio once fade is finished
                 zone.howl.once('fade', () => {
-                    if (zone.howl.volume() === 0) {
+                    if (!zone.isInside) { // Double check they haven't re-entered
                         zone.howl.pause();
                     }
                 });
