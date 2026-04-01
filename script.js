@@ -122,44 +122,55 @@ function getCompassDirection(b) {
     return 'Northwest';
 }
 
+// Global variable to check if experience started
+let experienceStarted = false;
+
+// Start GPS watching IMMEDIATELY on load
+const watchId = navigator.geolocation.watchPosition(pos => {
+    const { latitude, longitude } = pos.coords;
+    userMarker.setLatLng([latitude, longitude]);
+    
+    // Only update guidance/sounds if the user has clicked start
+    if (experienceStarted) {
+        updateGuidance(latitude, longitude);
+    }
+}, err => console.error("GPS Watch Error:", err), {
+    enableHighAccuracy: true,
+    maximumAge: 0
+});
+
 document.getElementById('start-btn').addEventListener('click', function() {
     this.style.display = 'none';
+    experienceStarted = true;
     if (Howler.ctx.state === 'suspended') Howler.ctx.resume();
     initCompass();
-    navigator.geolocation.watchPosition(pos => {
-        userMarker.setLatLng([pos.coords.latitude, pos.coords.longitude]);
-        updateGuidance(pos.coords.latitude, pos.coords.longitude);
-    }, null, {enableHighAccuracy: true});
+    
+    // Trigger one update immediately so it doesn't wait for next GPS move
+    const p = userMarker.getLatLng();
+    if (p.lat !== 0) updateGuidance(p.lat, p.lng);
 });
 
 map.on('move', () => {
     const p = userMarker.getLatLng();
-    updateGuidance(p.lat, p.lng);
-});
-
-map.on('move', () => {
+    if (experienceStarted) updateGuidance(p.lat, p.lng);
+    
     const c = map.getCenter();
     document.getElementById('center-coords').innerText = `Center: ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
 });
 
-// 7. LOCATE USER LOGIC (Improved)
+// 7. LOCATE USER LOGIC
 document.getElementById('locate-btn').addEventListener('click', () => {
-    // 1. Try to get position from the existing marker first
     const userPos = userMarker.getLatLng();
     
-    // Check if the marker has been moved from the default [0,0]
     if (userPos.lat !== 0 || userPos.lng !== 0) {
         map.flyTo(userPos, 18, { animate: true, duration: 1.5 });
-    } 
-    // 2. Fallback: If marker is at 0,0, ask GPS directly
-    else {
+    } else {
+        // If marker is still at 0,0, try a one-time high-accuracy grab
         navigator.geolocation.getCurrentPosition(pos => {
             const newPos = [pos.coords.latitude, pos.coords.longitude];
             userMarker.setLatLng(newPos);
             map.flyTo(newPos, 18, { animate: true, duration: 1.5 });
-        }, (err) => {
-            alert("GPS Error: Please ensure Location Services are on.");
-            console.error(err);
-        }, { enableHighAccuracy: true });
+        }, (err) => alert("Please enable GPS to use this feature."), 
+        { enableHighAccuracy: true });
     }
 });
