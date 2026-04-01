@@ -34,7 +34,6 @@ function updateGuidance(uLat, uLng) {
     const centerPoint = turf.point([center.lng, center.lat]);
 
     // --- RADAR LOGIC ---
-    // 1. Find the closest zone
     let closestZone = soundZones[0];
     let minDistance = Infinity;
 
@@ -47,38 +46,52 @@ function updateGuidance(uLat, uLng) {
         }
     });
 
-    // 2. Calculate the "Orbit" position (15 meters away towards the zone)
     const bearingToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
     const satellitePos = turf.destination(userPoint, 10, bearingToZone, {units: 'meters'});
     
-    // 3. Move the blue radar marker
-    if (window.radarMarker) {
+    if (radarMarker) {
         radarMarker.setLatLng([satellitePos.geometry.coordinates[1], satellitePos.geometry.coordinates[0]]);
     }
 
-    // --- EXISTING: CROSSHAIR LOGIC ---
+    // --- CROSSHAIR LOGIC ---
     const dist = turf.distance(userPoint, centerPoint, {units: 'meters'});
     const bearing = turf.rhumbBearing(userPoint, centerPoint);
     const dir = getCompassDirection(bearing);
-
     document.getElementById('direction-hint').innerText = `Crosshair is ${dir} (${Math.round(dist)}m)`;
 
-    // --- EXISTING: AUDIO ZONES ---
+    // --- UPDATED AUDIO ZONES: 3s Fade In / 5s Fade Out ---
     let activeName = "No zone detected...";
+
     soundZones.forEach(zone => {
         const poiPoint = turf.point([zone.lng, zone.lat]);
         const zDist = turf.distance(userPoint, poiPoint, {units: 'meters'});
+
         if (zDist <= zone.radius) {
-            if (!zone.howl.playing()) zone.howl.play();
-            zone.howl.fade(zone.howl.volume(), 1.0, 1000);
             activeName = `Playing: ${zone.name}`;
+            
+            // FADE IN: Only if not already playing at full volume
+            if (zone.howl.volume() < 1.0) {
+                if (!zone.howl.playing()) zone.howl.play();
+                // 3000ms = 3 seconds
+                zone.howl.fade(zone.howl.volume(), 1.0, 3000);
+            }
         } else {
-            zone.howl.fade(zone.howl.volume(), 0, 1000);
+            // FADE OUT: Only if volume is currently above 0
+            if (zone.howl.volume() > 0) {
+                // 5000ms = 5 seconds
+                zone.howl.fade(zone.howl.volume(), 0, 5000);
+
+                // Stop the audio once the 5s fade is finished to prevent "ghost" sounds
+                zone.howl.once('fade', () => {
+                    if (zone.howl.volume() === 0) {
+                        zone.howl.pause();
+                    }
+                });
+            }
         }
     });
     document.getElementById('status').innerText = activeName;
 }
-
 
 // 5. COMPASS LOGIC
 let targetHeading = 0;
