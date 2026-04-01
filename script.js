@@ -24,10 +24,10 @@ soundZones.forEach(zone => {
     zone.howl = new Howl({ 
         src: [zone.audioFile], 
         loop: true, 
-        volume: 0, 
+        volume: 1.0, // Start at full volume
         html5: true 
     });
-    zone.isInside = false; // Track the state of the user relative to this zone
+    zone.isInside = false; 
 });
 
 // 4. GUIDANCE ENGINE
@@ -52,7 +52,7 @@ function updateGuidance(uLat, uLng) {
         triangleElement.style.transform = `rotate(${angleToZone}deg) translateY(-25px)`;
     }
 
-    // --- FIXED AUDIO LOGIC ---
+    // --- SIMPLE ON/OFF AUDIO LOGIC ---
     let activeName = "No zone detected...";
 
     soundZones.forEach(zone => {
@@ -62,35 +62,18 @@ function updateGuidance(uLat, uLng) {
         if (zDist <= zone.radius) {
             activeName = `Playing: ${zone.name}`;
             
-            // Trigger Fade In ONLY if we aren't already inside
+            // If we just entered, play immediately
             if (!zone.isInside) {
                 zone.isInside = true;
-                
-                // Stop any current fade-outs immediately
-                zone.howl.off('fade'); 
-                
-                if (!zone.howl.playing()) zone.howl.play();
-                zone.howl.fade(zone.howl.volume(), 1.0, 3000); 
-                console.log("Fading in:", zone.name);
+                zone.howl.play();
+                console.log("Audio ON:", zone.name);
             }
         } else {
-            // Trigger Fade Out ONLY if we were previously inside
+            // If we just exited, stop immediately
             if (zone.isInside) {
                 zone.isInside = false;
-                
-                // Stop any current fade-ins immediately
-                zone.howl.off('fade'); 
-                
-                zone.howl.fade(zone.howl.volume(), 0, 5000);
-                console.log("Fading out:", zone.name);
-
-                // Use the 'once' listener correctly to pause after fade
-                zone.howl.once('fade', () => {
-                    if (!zone.isInside && zone.howl.volume() === 0) {
-                        zone.howl.pause();
-                        console.log("Paused:", zone.name);
-                    }
-                });
+                zone.howl.stop(); // Stop resets the track; use .pause() if you want it to resume where it left off
+                console.log("Audio OFF:", zone.name);
             }
         }
     });
