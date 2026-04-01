@@ -45,7 +45,7 @@ function updateGuidance(uLat, uLng) {
 
     // 2. Calculate the "Orbit" position (15 meters away towards the zone)
     const bearingToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
-    const satellitePos = turf.destination(userPoint, 15, bearingToZone, {units: 'meters'});
+    const satellitePos = turf.destination(userPoint, 10, bearingToZone, {units: 'meters'});
     
     // 3. Move the blue radar marker
     if (window.radarMarker) {
