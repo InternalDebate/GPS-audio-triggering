@@ -142,17 +142,24 @@ map.on('move', () => {
     document.getElementById('center-coords').innerText = `Center: ${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`;
 });
 
-// 7. LOCATE USER LOGIC
+// 7. LOCATE USER LOGIC (Improved)
 document.getElementById('locate-btn').addEventListener('click', () => {
+    // 1. Try to get position from the existing marker first
     const userPos = userMarker.getLatLng();
     
-    // Check if we actually have a valid location yet
+    // Check if the marker has been moved from the default [0,0]
     if (userPos.lat !== 0 || userPos.lng !== 0) {
-        map.flyTo(userPos, 18, {
-            animate: true,
-            duration: 1.5 // seconds
-        });
-    } else {
-        alert("Waiting for GPS signal...");
+        map.flyTo(userPos, 18, { animate: true, duration: 1.5 });
+    } 
+    // 2. Fallback: If marker is at 0,0, ask GPS directly
+    else {
+        navigator.geolocation.getCurrentPosition(pos => {
+            const newPos = [pos.coords.latitude, pos.coords.longitude];
+            userMarker.setLatLng(newPos);
+            map.flyTo(newPos, 18, { animate: true, duration: 1.5 });
+        }, (err) => {
+            alert("GPS Error: Please ensure Location Services are on.");
+            console.error(err);
+        }, { enableHighAccuracy: true });
     }
 });
