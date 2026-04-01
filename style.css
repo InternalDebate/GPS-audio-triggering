@@ -133,3 +133,11 @@ html, body {
     background: #f0f0f0;
     transform: scale(0.95);
 }
+
+/* The 'satellite' radar dot */
+.radar-dot {
+    background-color: #3498db;
+    border: 2px solid white;
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.8);
+}
