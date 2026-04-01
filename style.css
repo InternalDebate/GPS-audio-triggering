@@ -134,10 +134,13 @@ html, body {
     transform: scale(0.95);
 }
 
-/* The 'satellite' radar dot */
-.radar-dot {
-    background-color: #3498db;
-    border: 2px solid white;
-    border-radius: 50%;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.8);
+/* The 'satellite' radar triangle */
+.radar-triangle {
+    width: 0; 
+    height: 0; 
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 15px solid #3498db; /* The triangle point */
+    filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));
+    transition: transform 0.1s linear; /* Smooths out the rotation */
 }
