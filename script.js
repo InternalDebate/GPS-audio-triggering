@@ -1,3 +1,4 @@
+let closestZone = null; // Track this globally for the buttons
 // --- VIRTUAL CONSOLE LOGIC ---
 const logContainer = document.getElementById('log-container');
 
@@ -71,10 +72,17 @@ function updateGuidance(uLat, uLng) {
 
     // Convert coordinates to Turf point for distance calculations
     const userPoint = turf.point([uLng, uLat]);
-
-    // --- 1. RADAR LOGIC (Triangle) ---
-    let closestZone = soundZones[0];
-    let minDistance = Infinity;
+    
+    // --- 1. RADAR LOGIC (TRIANGLE)---
+    let minDist = Infinity;
+    soundZones.forEach(zone => {
+        const zonePoint = turf.point([zone.lng, zone.lat]);
+        const d = turf.distance(userPoint, zonePoint, {units: 'meters'});
+        if (d < minDist) {
+            minDist = d;
+            closestZone = zone; // Update the global variable
+        }
+    });
 
     // Scan all zones to find the nearest one
     soundZones.forEach(zone => {
@@ -289,3 +297,39 @@ let targetHeading = 0;
             }, { enableHighAccuracy: true });
         }
     });
+
+    // --- MANUAL OVERRIDE BUTTONS ---
+
+document.getElementById('manual-in').addEventListener('click', () => {
+    if (!closestZone) return;
+    
+    console.log("MANUAL: Fading in", closestZone.name);
+    closestZone.isInside = true; // Set state to inside
+    closestZone.howl.off('fade');
+    
+    if (!closestZone.howl.playing()) {
+        closestZone.howl.volume(0);
+        closestZone.howl.play();
+    }
+    
+    // Smoothly fade to full volume
+    closestZone.howl.fade(closestZone.howl.volume(), 1.0, 3000);
+});
+
+document.getElementById('manual-out').addEventListener('click', () => {
+    if (!closestZone) return;
+
+    console.log("MANUAL: Fading out", closestZone.name);
+    closestZone.isInside = false; // Set state to outside
+    closestZone.howl.off('fade');
+    
+    // Fade to zero
+    closestZone.howl.fade(closestZone.howl.volume(), 0, 5000);
+    
+    closestZone.howl.once('fade', () => {
+        if (!closestZone.isInside && closestZone.howl.volume() === 0) {
+            closestZone.howl.pause();
+            console.log("MANUAL: Audio Paused");
+        }
+    });
+});
