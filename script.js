@@ -1,3 +1,33 @@
+// --- VIRTUAL CONSOLE LOGIC ---
+const logContainer = document.getElementById('log-container');
+
+// Intercept standard console.log
+const oldLog = console.log;
+console.log = function(...args) {
+    oldLog.apply(console, args); // Keep original console behavior
+    const entry = document.createElement('div');
+    entry.className = 'log-entry';
+    entry.innerText = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg) : arg
+    ).join(' ');
+    
+    if (logContainer) {
+        logContainer.appendChild(entry);
+        logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll to bottom
+    }
+};
+
+// Toggle Visibility
+document.getElementById('toggle-console').addEventListener('click', () => {
+    const consoleDiv = document.getElementById('debug-console');
+    consoleDiv.style.display = consoleDiv.style.display === 'none' ? 'flex' : 'none';
+});
+
+// Clear Log Function
+function clearLog() {
+    logContainer.innerHTML = '';
+}
+
 // 1. DATA
 const soundZones = [
     { name: "Spot 1", lat: 52.089268, lng: 5.130624, radius: 20, audioFile: 'Nature noise - Echoes - EMF.mp3' },
