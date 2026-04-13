@@ -29,9 +29,13 @@ const soundZones = [
 
 // --- 2. MAP SETUP ---
 const map = L.map('map').setView([soundZones[0].lat, soundZones[0].lng], 16);
+
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
+document.getElementById('center-coords').innerText = `Center: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
+
 const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red' }).addTo(map);
+
 const satelliteMarker = L.divIcon({ 
     className: 'radar-container', 
     html: '<div class="radar-triangle"></div>', // This creates a blue radar arrow
@@ -229,12 +233,6 @@ map.on('move', function() {
     
     // Update the UI text
     document.getElementById('center-coords').innerText = `Center: ${lat}, ${lng}`;
-    
-    // Optional: If you want the "Radar" to point from the center 
-    // instead of from your GPS location, call updateGuidance here:
-    if (experienceStarted) {
-        updateGuidance(center.lat, center.lng);
-    }
 });
 
 function clearLog() { logContainer.innerHTML = ''; }
