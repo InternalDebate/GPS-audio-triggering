@@ -32,7 +32,13 @@ const map = L.map('map').setView([soundZones[0].lat, soundZones[0].lng], 16);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red' }).addTo(map);
-const satelliteMarker = L.divIcon({ className: 'radar-dot', iconSize: [12, 12] });
+const satelliteMarker = L.divIcon({ 
+    className: 'radar-container', 
+    html: '<div class="radar-triangle"></div>', // This creates a blue radar arrow
+    iconSize: [0, 0], 
+    iconAnchor: [0, 0] 
+});
+
 const radarMarker = L.marker([0, 0], { icon: satelliteMarker, interactive: false }).addTo(map);
 
 // --- 3. AUDIO PREP ---
@@ -170,10 +176,22 @@ document.getElementById('manual-out').addEventListener('click', () => {
 document.getElementById('start-btn').addEventListener('click', function () {
     this.style.display = 'none';
     experienceStarted = true;
+    
+    // Force the browser to resume audio
     if (Howler.ctx.state === 'suspended') Howler.ctx.resume();
+    
+    // Initialize the compass
     initCompass();
+    
+    // IMPORTANT: Run guidance immediately so 'closestZone' is found right away
     const p = userMarker.getLatLng();
-    if (p.lat !== 0) updateGuidance(p.lat, p.lng);
+    if (p.lat !== 0) {
+        updateGuidance(p.lat, p.lng);
+    } else {
+        // If GPS hasn't found you yet, use the first zone as a fallback for the buttons
+        closestZone = soundZones[0]; 
+        console.log("Waiting for GPS... Defaulting to Spot 1");
+    }
 });
 
 // Toggle Debug
