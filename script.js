@@ -193,6 +193,8 @@ document.getElementById('locate-btn').addEventListener('click', () => {
 // --- 7. GPS WATCHER ---
 navigator.geolocation.watchPosition(pos => {
     const { latitude, longitude } = pos.coords;
+
+    document.getElementById('center-coords').innerText = `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`;
     if (smoothLat === 0) { smoothLat = latitude; smoothLng = longitude; }
     
     smoothLat += (latitude - smoothLat) * smoothingFactor;
