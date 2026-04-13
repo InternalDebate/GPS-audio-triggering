@@ -212,7 +212,6 @@ document.getElementById('locate-btn').addEventListener('click', () => {
 navigator.geolocation.watchPosition(pos => {
     const { latitude, longitude } = pos.coords;
 
-    document.getElementById('center-coords').innerText = `Lat: ${latitude.toFixed(4)}, Lng: ${longitude.toFixed(4)}`;
     if (smoothLat === 0) { smoothLat = latitude; smoothLng = longitude; }
     
     smoothLat += (latitude - smoothLat) * smoothingFactor;
@@ -221,5 +220,21 @@ navigator.geolocation.watchPosition(pos => {
     userMarker.setLatLng([smoothLat, smoothLng]);
     if (experienceStarted) updateGuidance(smoothLat, smoothLng);
 }, err => console.error(err), { enableHighAccuracy: true });
+
+// --- 8. MAP CENTER COORDINATES ---
+map.on('move', function() {
+    const center = map.getCenter();
+    const lat = center.lat.toFixed(6);
+    const lng = center.lng.toFixed(6);
+    
+    // Update the UI text
+    document.getElementById('center-coords').innerText = `Center: ${lat}, ${lng}`;
+    
+    // Optional: If you want the "Radar" to point from the center 
+    // instead of from your GPS location, call updateGuidance here:
+    if (experienceStarted) {
+        updateGuidance(center.lat, center.lng);
+    }
+});
 
 function clearLog() { logContainer.innerHTML = ''; }
