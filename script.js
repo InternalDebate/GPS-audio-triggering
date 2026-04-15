@@ -22,10 +22,12 @@ console.log = function (...args) {
 const soundZones = [
     { name: "maliebaan 1", lat: 52.088679, lng: 5.129786, radius: 10, audioFile: 'Nature noise - Echoes - EMF.mp3' },
     { name: "maliebaan 13", lat: 52.089120, lng: 5.130747, radius: 10, audioFile: 'Nature noise - Echoes - PIEP.mp3' },
-    { name: "electriciteitskast", lat: 52.089430, lng: 5.130836, radius: 5, audioFile: 'Nature noise - Echoes - WATERLEIDING.mp3' },
+    { name: "electriciteitskast", lat: 52.089430, lng: 5.130836, radius: 7, audioFile: 'Nature noise - Echoes - WATERLEIDING.mp3' },
     { name: "maliebaan 14", lat: 52.090412, lng: 5.131557, radius: 5, audioFile: 'Nature noise - Echoes - DUIF.mp3' },
-    { name: "maliebaan 16", lat: 52.090561, lng: 5.131788, radius: 5, audioFile: 'Nature noise - Echoes - EMF.mp3' },
+    { name: "maliebaan 16", lat: 52.090561, lng: 5.131788, radius: 7, audioFile: 'Nature noise - Echoes - EMF.mp3' },
     { name: "maliebaan 16 poort", lat: 52.090715, lng: 5.131978, radius: 5, audioFile: 'Nature noise - Echoes - EMF.mp3' },
+    { name: "maliebaan 24 charging station", lat: 52.090992, lng: 5.132597, radius: 10, audioFile: 'Nature noise - Echoes - EMF.mp3' },
+    { name: "maliebaan voorbijgaande auto's", lat: 52.090992, lng: 5.132597, radius: 20, audioFile: 'Nature noise - Echoes - EMF.mp3' },
 ];
 
 // --- 2. MAP SETUP ---
