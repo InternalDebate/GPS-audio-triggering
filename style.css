@@ -1,105 +1,82 @@
-html,
-body {
+html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     width: 100%;
     font-family: sans-serif;
     overflow: hidden;
+    background-color: #000; /* Prevents white flash */
 }
 
 #map {
-    height: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
     width: 100%;
     z-index: 1;
 }
 
-/* --- Header Style --- */
 #header-title {
     position: absolute;
     top: 15px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    pointer-events: none;
-    /* Allows clicking through to map if needed */
 }
-
-
 
 #header-title h1 {
     margin: 0;
-    padding: 8px 20px;
+    padding: 8px 15px;
     background: rgba(255, 255, 255, 0.9);
     border: 2px solid #333;
     border-radius: 15px;
-    font-size: 13px;
-    white-space: nowrap;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    font-size: 14px;
 }
 
-/* --- Right Side Container --- */
 #right-panel {
     position: absolute;
-    top: 10px;
+    top: 70px; /* Moved down to avoid header */
     right: 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    /* Align items to the right edge */
-    gap: 10px;
     z-index: 1000;
 }
 
-/* --- Info Box --- */
 #status-panel {
     background: rgba(255, 255, 255, 0.9);
     padding: 12px;
     border-radius: 8px;
-    border: 1px solid #ccc;
-    width: 180px;
-    font-size: 13px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    width: 160px;
+    font-size: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
 }
 
-#status-panel p,
-#status-panel div {
-    margin: 5px 0;
-}
-
-#start-btn {
+.controls button {
     width: 100%;
-    padding: 8px;
-    background: #27ae60;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    margin-top: 5px;
+    font-size: 10px;
     cursor: pointer;
-    font-size: 14px;
-    margin-bottom: 5px;
 }
 
-.user-needle-container {
-    background: none !important;
-    border: none !important;
-}
-
+/* Fix for the needle */
 #user-needle {
-width: 0; 
+    width: 0; 
     height: 0;
     border-left: 10px solid transparent;
     border-right: 10px solid transparent;
-    border-bottom: 25px solid red; /* The 'needle' shape */
-    filter: drop-shadow(0 0 3px rgba(0,0,0,0.4));
+    border-bottom: 25px solid red;
     position: absolute;
-    top: 50%; 
-    left: 50%;
-    /* We anchor it so it rotates around its center-bottom area */
-    margin-left: -10px;
-    margin-top: -15px;
+    top: -12px;
+    left: -10px;
     transform-origin: 50% 70%;
 }
 
+.radar-triangle {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 15px solid #3498db;
+    transform-origin: center bottom;
+}
 
 #crosshair {
     position: absolute;
@@ -108,96 +85,5 @@ width: 0;
     transform: translate(-50%, -50%);
     z-index: 2000;
     color: red;
-    font-size: 24px;
     pointer-events: none;
-}
-
-#locate-btn {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    z-index: 2000;
-    background: white;
-    border: 2px solid #333;
-    border-radius: 50%;
-    font-size: 24px;
-    cursor: pointer;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-#locate-btn:active {
-    background: #f0f0f0;
-    transform: scale(0.95);
-}
-
-/* The 'satellite' radar triangle */
-.radar-triangle {
-    width: 0;
-    height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 15px solid #3498db;
-    /* The triangle point */
-    filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
-    transition: transform 0.1s linear;
-    /* Smooths out the rotation */
-}
-
-#debug-console {
-    position: fixed;
-    bottom: 80px;
-    left: 10px;
-    right: 10px;
-    height: 200px;
-    background: rgba(0, 0, 0, 0.85);
-    color: #00ff00;
-    font-family: monospace;
-    font-size: 11px;
-    z-index: 9999;
-    border-radius: 5px;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #444;
-}
-
-#debug-header {
-    background: #333;
-    padding: 5px 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid #444;
-}
-
-#log-container {
-    padding: 5px;
-    overflow-y: auto;
-    flex-grow: 1;
-}
-
-.log-entry {
-    border-bottom: 1px solid #222;
-    padding: 2px 0;
-    word-break: break-all;
-}
-
-#toggle-console {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
-    /* Opposite side of your locate button */
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    background: #444;
-    color: white;
-    border: none;
-    z-index: 10000;
-    font-size: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
