@@ -44,7 +44,7 @@ const userNeedleIcon = L.divIcon({
     iconAnchor: [10, 15]
 });
 
-const userMarker = L.marker([0, 0], { icon: userNeedleIcon }).addTo(map);const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red' }).addTo(map);
+const userMarker = L.marker([0, 0], { icon: userNeedleIcon }).addTo(map);
 
 const satelliteMarker = L.divIcon({
     className: 'radar-container',
