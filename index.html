@@ -1,44 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Tour by Jesse Goddijn</title>
+    <title>Ghosts of the Maliebaan</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
-
-<body><!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Tour by Jesse Goddijn</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css">
-</head>
-
 <body>
+
     <div id="header-title">
         <h1>Ghosts of the Maliebaan (v0.90)</h1>
     </div>
 
     <div id="right-panel">
-
-        <div class="controls">
-            <button id="manual-in">Force Fade In</button>
-            <button id="manual-out">Force Fade Out</button>
-        </div>
-
         <div id="status-panel">
             <button id="start-btn">PRESS TO START</button>
             <p id="status">Ready...</p>
-            <p id="direction-hint">Direction to Zone: --</p>
-            <div id="center-coords">Center coordinates: 0.0000, 0.0000</div>
+            <p id="direction-hint">Waiting for GPS...</p>
+            <div id="center-coords">0.0000, 0.0000</div>
+            
+            <hr>
+            <div class="controls">
+                <button id="manual-in">Force Fade In</button>
+                <button id="manual-out">Force Fade Out</button>
+            </div>
         </div>
     </div>
+
+    <div id="map"></div>
+    <div id="crosshair">+</div>
 
     <div id="debug-console" style="display: none;">
         <div id="debug-header">
@@ -48,11 +39,7 @@
         <div id="log-container"></div>
     </div>
 
-    <button id="toggle-console" title="Toggle Debug Log">📟</button>
-
-    <div id="crosshair">+</div>
-    <div id="map"></div>
-
+    <button id="toggle-console" title="Toggle Debug">📟</button>
     <button id="locate-btn" title="Center on Me">🎯</button>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -60,53 +47,4 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
     <script src="script.js"></script>
 </body>
-
-</html>
-    <div id="header-title">
-        <h1>Ghosts of the Maliebaan (v0.89)</h1>
-    </div>
-
-    <div id="right-panel">
-        <div id="compass-container">
-            <div id="compass-needle"></div>
-            <div class="label n">N</div>
-            <div class="label e">E</div>
-            <div class="label s">S</div>
-            <div class="label w">W</div>
-        </div>
-
-    <div class="controls">
-        <button id="manual-in">Force Fade In</button>
-        <button id="manual-out">Force Fade Out</button>
-    </div>
-
-        <div id="status-panel">
-            <button id="start-btn">PRESS TO START</button>
-            <p id="status">Ready...</p>
-            <p id="direction-hint">Direction to Zone: --</p>
-            <div id="center-coords">Center coordinates: 0.0000, 0.0000</div>
-        </div>
-    </div>
-
-    <div id="debug-console" style="display: none;">
-        <div id="debug-header">
-            <span>Debug Log</span>
-            <button onclick="clearLog()">Clear</button>
-        </div>
-        <div id="log-container"></div>
-    </div>
-
-    <button id="toggle-console" title="Toggle Debug Log">📟</button>
-
-    <div id="crosshair">+</div>
-    <div id="map"></div>
-
-    <button id="locate-btn" title="Center on Me">🎯</button>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
-    <script src="script.js"></script>
-</body>
-
 </html>
