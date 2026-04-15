@@ -57,6 +57,21 @@ html, body {
     cursor: pointer;
 }
 
+#locate-btn, #toggle-console {
+    position: fixed;
+    z-index: 9999;
+}
+
+#locate-btn {
+    bottom: 20px;
+    right: 20px;
+}
+
+#locate-btn {
+    bottom: 20px;
+    right: 20px;
+}
+
 /* Fix for the needle */
 #user-needle {
     width: 0; 
