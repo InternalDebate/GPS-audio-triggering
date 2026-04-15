@@ -1,8 +1,8 @@
 // --- 0. GLOBALS & VIRTUAL CONSOLE ---
-let closestZone = null; 
+let closestZone = null;
 let smoothLat = 0;
 let smoothLng = 0;
-const smoothingFactor = 0.15; 
+const smoothingFactor = 0.15;
 let experienceStarted = false;
 
 const logContainer = document.getElementById('log-container');
@@ -37,13 +37,20 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
 document.getElementById('center-coords').innerText = `Center: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
 
-const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red' }).addTo(map);
+const userNeedleIcon = L.divIcon({
+    className: 'user-needle-container',
+    html: '<div id="user-needle"></div>',
+    iconSize: [20, 30],
+    iconAnchor: [10, 15]
+});
 
-const satelliteMarker = L.divIcon({ 
-    className: 'radar-container', 
+const userMarker = L.marker([0, 0], { icon: userNeedleIcon }).addTo(map);const userMarker = L.circleMarker([0, 0], { radius: 8, color: 'red' }).addTo(map);
+
+const satelliteMarker = L.divIcon({
+    className: 'radar-container',
     html: '<div class="radar-triangle"></div>', // This creates a blue radar arrow
-    iconSize: [0, 0], 
-    iconAnchor: [0, 0] 
+    iconSize: [0, 0],
+    iconAnchor: [0, 0]
 });
 
 const radarMarker = L.marker([0, 0], { icon: satelliteMarker, interactive: false }).addTo(map);
@@ -55,7 +62,7 @@ soundZones.forEach(zone => {
         src: [zone.audioFile],
         loop: true,
         volume: 0,
-        html5: false, 
+        html5: false,
         preload: true
     });
     zone.isInside = false;
@@ -123,9 +130,7 @@ let targetHeading = 0;
 let currentHeading = 0;
 
 function initCompass() {
-    const needleElement = document.getElementById('compass-needle');
-    if (!needleElement) return;
-
+    // Look for the needle element now living on the map
     const handleMotion = (e) => {
         let heading = e.webkitCompassHeading || e.alpha;
         if (heading !== null && heading !== undefined) {
@@ -142,11 +147,18 @@ function initCompass() {
     }
 
     function animate() {
+        // Smooth rotation
         let diff = targetHeading - currentHeading;
         if (diff > 180) diff -= 360;
         if (diff < -180) diff += 360;
         currentHeading += diff * 0.15;
-        needleElement.style.transform = `translate(-50%, -50%) rotate(${currentHeading}deg)`;
+
+        // TARGET THE NEEDLE ON THE MAP
+        const needleElement = document.getElementById('user-needle');
+        if (needleElement) {
+            needleElement.style.transform = `rotate(${currentHeading}deg)`;
+        }
+        
         requestAnimationFrame(animate);
     }
     animate();
@@ -183,20 +195,20 @@ document.getElementById('manual-out').addEventListener('click', () => {
 document.getElementById('start-btn').addEventListener('click', function () {
     this.style.display = 'none';
     experienceStarted = true;
-    
+
     // Force the browser to resume audio
     if (Howler.ctx.state === 'suspended') Howler.ctx.resume();
-    
+
     // Initialize the compass
     initCompass();
-    
+
     // IMPORTANT: Run guidance immediately so 'closestZone' is found right away
     const p = userMarker.getLatLng();
     if (p.lat !== 0) {
         updateGuidance(p.lat, p.lng);
     } else {
         // If GPS hasn't found you yet, use the first zone as a fallback for the buttons
-        closestZone = soundZones[0]; 
+        closestZone = soundZones[0];
         console.log("Waiting for GPS... Defaulting to Spot 1");
     }
 });
@@ -220,7 +232,7 @@ navigator.geolocation.watchPosition(pos => {
     const { latitude, longitude } = pos.coords;
 
     if (smoothLat === 0) { smoothLat = latitude; smoothLng = longitude; }
-    
+
     smoothLat += (latitude - smoothLat) * smoothingFactor;
     smoothLng += (longitude - smoothLng) * smoothingFactor;
 
@@ -229,11 +241,11 @@ navigator.geolocation.watchPosition(pos => {
 }, err => console.error(err), { enableHighAccuracy: true });
 
 // --- 8. MAP CENTER COORDINATES ---
-map.on('move', function() {
+map.on('move', function () {
     const center = map.getCenter();
     const lat = center.lat.toFixed(6);
     const lng = center.lng.toFixed(6);
-    
+
     // Update the UI text
     document.getElementById('center-coords').innerText = `Center: ${lat}, ${lng}`;
 });
