@@ -124,3 +124,54 @@ html, body {
     color: red;
     pointer-events: none;
 }
+
+/* --- Debug Console (Add this to the bottom of style.css) --- */
+#debug-console {
+    position: fixed;
+    bottom: 100px; /* Sits above the new 60px buttons */
+    left: 10px;
+    right: 10px;
+    height: 200px;
+    background: rgba(0, 0, 0, 0.85); /* Semi-transparent black */
+    color: #00ff00; /* Classic "Matrix" green text */
+    font-family: monospace;
+    font-size: 11px;
+    z-index: 9999;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #444;
+    pointer-events: auto; /* Ensures you can scroll the log */
+}
+
+#debug-header {
+    background: #333;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #444;
+    border-radius: 8px 8px 0 0;
+}
+
+#log-container {
+    padding: 10px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.log-entry {
+    border-bottom: 1px solid #222;
+    padding: 4px 0;
+    word-break: break-all;
+}
+
+/* Make the "Clear" button inside the console look decent */
+#debug-header button {
+    background: #555;
+    color: white;
+    border: none;
+    padding: 2px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+}
