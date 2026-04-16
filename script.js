@@ -46,15 +46,6 @@ const userNeedleIcon = L.divIcon({
 
 const userMarker = L.marker([0, 0], { icon: userNeedleIcon }).addTo(map);
 
-const satelliteMarker = L.divIcon({
-    className: 'radar-container',
-    html: '<div class="radar-sattelite"></div>', // This creates a blue radar 
-    iconSize: [0, 0],
-    iconAnchor: [0, 0]
-});
-
-const radarMarker = L.marker([0, 0], { icon: satelliteMarker, interactive: false }).addTo(map);
-
 // --- 3. AUDIO PREP ---
 soundZones.forEach(zone => {
     L.circle([zone.lat, zone.lng], { radius: zone.radius, color: '#3498db' }).addTo(map);
@@ -74,20 +65,25 @@ function updateGuidance(uLat, uLng) {
     const userPoint = turf.point([uLng, uLat]);
 
     //are we currently inside a zone ???
-    let currentOccupiedZone = null;    
+    let currentOccupiedZone = null;   
+    let minDistance = Infinity;
+    let targetZone = null; 
     
     soundZones.forEach(zone => {
         const zonePoint = turf.point([zone.lng, zone.lat]);
         const d = turf.distance(userPoint, zonePoint, { units: 'meters' });
+        
+        // Check if inside any zone
+        if (d <= zone.radius) {
+            currentOccupiedZone = zone;
+        }
+        
         if (d < minDistance) {
             minDistance = d;
             targetZone = zone;
         }
     });
 
-    //finding the closest zone thets not the currently occupied zone
-    let minDistance = Infinity;
-    let targetZone = null;
     
         soundZones.forEach(zone => {
             //skip current zone
@@ -102,16 +98,6 @@ function updateGuidance(uLat, uLng) {
     });
     
     closestZone = targetZone || soundZones[0];
-    
-    radarMarker.setLatLng([uLat, uLng]);
-    
-    if (closestZone) {
-        const angleToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
-        const satteliteElement = document.querySelector('.radar-sattelite');
-        if (satteliteElement) {
-        satteliteElement.style.transform = `rotate(${angleToZone}deg) translateY(-35px)`;
-        }
-    }
 
     // B. Audio Trigger Logic
     let activeName = currentOccupiedZone ? `Playing: ${currentOccupiedZone.name}` : "No portal detected";
