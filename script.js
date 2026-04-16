@@ -48,7 +48,7 @@ const userMarker = L.marker([0, 0], { icon: userNeedleIcon }).addTo(map);
 
 const satelliteMarker = L.divIcon({
     className: 'radar-container',
-    html: '<div class="radar-triangle"></div>', // This creates a blue radar arrow
+    html: '<div class="radar-sattelite"></div>', // This creates a blue radar arrow
     iconSize: [0, 0],
     iconAnchor: [0, 0]
 });
@@ -75,24 +75,35 @@ function updateGuidance(uLat, uLng) {
 
     // A. Find Closest Zone for Radar
     let minDistance = Infinity;
+    let targetZone = null;
+    
     soundZones.forEach(zone => {
+        //skip occupied zone
+        if (zone=== currentOccupiedZone) return;
+        
         const zonePoint = turf.point([zone.lng, zone.lat]);
         const d = turf.distance(userPoint, zonePoint, { units: 'meters' });
+        
         if (d < minDistance) {
             minDistance = d;
-            closestZone = zone;
+            targetZone = zone;
         }
     });
 
+    closestZone = targetZone || soundZones[0];
+
     radarMarker.setLatLng([uLat, uLng]);
+    if (targetZone) {
     const angleToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
-    const triangleElement = document.querySelector('.radar-triangle');
-    if (triangleElement) {
-        triangleElement.style.transform = `rotate(${angleToZone}deg) translateY(-25px)`;
+    const satteliteElement = document.querySelector('.radar-sattelite');
+    if (satteliteElement) {
+        satteliteElement.style.transform = `rotate(${angleToZone}deg) translateY(-25px)`;
+        }
     }
 
     // B. Audio Trigger Logic
-    let activeName = "No zone detected...";
+    let activeName = currentOccupiedZone ? 'Playing: ${currentOccupiedZone.name}' : "No portal detected";
+    
     soundZones.forEach(zone => {
         const poiPoint = turf.point([zone.lng, zone.lat]);
         const zDist = turf.distance(userPoint, poiPoint, { units: 'meters' });
