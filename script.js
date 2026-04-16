@@ -48,7 +48,7 @@ const userMarker = L.marker([0, 0], { icon: userNeedleIcon }).addTo(map);
 
 const satelliteMarker = L.divIcon({
     className: 'radar-container',
-    html: '<div class="radar-sattelite"></div>', // This creates a blue radar arrow
+    html: '<div class="radar-sattelite"></div>', // This creates a blue radar 
     iconSize: [0, 0],
     iconAnchor: [0, 0]
 });
