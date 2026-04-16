@@ -70,7 +70,7 @@ html, body {
 
 #start-btn:active {
     background-color: #388e2c;
-    transform: scale(0,2);
+    transform: scale(0.9);
 }
 
 #locate-btn, #toggle-console {
@@ -105,8 +105,8 @@ html, body {
 
 /* tapping visual feedback */
 #locate-btn:active, #toggle-console:active {
-    transform: scale(0,2);
-    filter: brightness(1,2);
+    transform: scale(0.9);
+    filter: brightness(1.2);
 }
 
 /* Fix for the needle */
