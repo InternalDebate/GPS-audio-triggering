@@ -57,6 +57,22 @@ html, body {
     cursor: pointer;
 }
 
+#start-btn {
+     background-color: #45B037; 
+    color: white;
+    border: none;
+    padding: 9px;
+    border-radius: 6px;
+    width: 100%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.2s;
+}
+
+#start-btn:active {
+    background-color: #388e2c;
+    transform: scale(0,2);
+}
+
 #locate-btn, #toggle-console {
     position: fixed;
     z-index: 9999;
@@ -74,7 +90,7 @@ html, body {
 }
 
 #locate-btn {
-    bottom: 50px;
+    bottom: 60px;
     right: 20px;
     background-color: #BA1609; /* solid red */
     color: white;
