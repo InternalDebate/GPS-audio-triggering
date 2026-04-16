@@ -1,5 +1,5 @@
 // --- 0. GLOBALS & VIRTUAL CONSOLE ---
-const: VERSION = 'v0,103';
+const: VERSION = 'v0,104';
 let closestZone = null;
 let smoothLat = 0;
 let smoothLng = 0;
@@ -35,6 +35,9 @@ const soundZones = [
 const map = L.map('map').setView([soundZones[0].lat, soundZones[0].lng], 16);
 
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+// Set header with version
+document.getElementById('header-h1').innerText = `Ghosts of the Maliebaan (${VERSION})`;
 
 document.getElementById('center-coords').innerText = `Center: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
 
