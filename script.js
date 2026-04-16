@@ -27,7 +27,7 @@ const soundZones = [
     { name: "maliebaan 16", lat: 52.090561, lng: 5.131788, radius: 7, audioFile: 'Nature noise - Echoes - EMF.mp3' },
     { name: "maliebaan 16 poort", lat: 52.090715, lng: 5.131978, radius: 5, audioFile: 'Nature noise - Echoes - EMF.mp3' },
     { name: "maliebaan 24 charging station", lat: 52.090992, lng: 5.132597, radius: 10, audioFile: 'Nature noise - Echoes - EMF.mp3' },
-    { name: "maliebaan voorbijgaande auto's", lat: 52.090992, lng: 5.132597, radius: 20, audioFile: 'Nature noise - Echoes - EMF.mp3' },
+    { name: "maliebaan voorbijgaande auto's", lat: 52.089994, lng: 5.131597, radius: 20, audioFile: 'Nature noise - Echoes - EMF.mp3' },
 ];
 
 // --- 2. MAP SETUP ---
@@ -73,36 +73,48 @@ function updateGuidance(uLat, uLng) {
     if (!uLat || uLat === 0) return;
     const userPoint = turf.point([uLng, uLat]);
 
-    // A. Find Closest Zone for Radar
-    let minDistance = Infinity;
-    let targetZone = null;
+    //are we currently inside a zone ???
+    let currentOccupiedZone = null;    
     
     soundZones.forEach(zone => {
-        //skip occupied zone
-        if (zone=== currentOccupiedZone) return;
-        
         const zonePoint = turf.point([zone.lng, zone.lat]);
         const d = turf.distance(userPoint, zonePoint, { units: 'meters' });
-        
         if (d < minDistance) {
             minDistance = d;
             targetZone = zone;
         }
     });
 
+    //finding the closest zone thets not the currently occupied zone
+    let minDistance = Infinity;
+    let targetZone = null;
+    
+        soundZones.forEach(zone => {
+            //skip current zone
+        if (currentOccupiedZone && zone === currentOccupiedZone) return;
+            
+        const zonePoint = turf.point([zone.lng, zone.lat]);
+        const d = turf.distance(userPoint, zonePoint, { units: 'meters' });
+        if (d < minDistance) {
+            minDistance = d;
+            targetZone = zone;
+        }
+    });
+    
     closestZone = targetZone || soundZones[0];
-
+    
     radarMarker.setLatLng([uLat, uLng]);
-    if (targetZone) {
-    const angleToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
-    const satteliteElement = document.querySelector('.radar-sattelite');
-    if (satteliteElement) {
-        satteliteElement.style.transform = `rotate(${angleToZone}deg) translateY(-25px)`;
+    
+    if (closestZone) {
+        const angleToZone = turf.bearing(userPoint, turf.point([closestZone.lng, closestZone.lat]));
+        const satteliteElement = document.querySelector('.radar-sattelite');
+        if (satteliteElement) {
+        satteliteElement.style.transform = `rotate(${angleToZone}deg) translateY(-35px)`;
         }
     }
 
     // B. Audio Trigger Logic
-    let activeName = currentOccupiedZone ? 'Playing: ${currentOccupiedZone.name}' : "No portal detected";
+    let activeName = currentOccupiedZone ? `Playing: ${currentOccupiedZone.name}` : "No portal detected";
     
     soundZones.forEach(zone => {
         const poiPoint = turf.point([zone.lng, zone.lat]);
