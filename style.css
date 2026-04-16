@@ -60,16 +60,37 @@ html, body {
 #locate-btn, #toggle-console {
     position: fixed;
     z-index: 9999;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 3px;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    transition: transform 0.1s, filter 0.1s;
 }
 
 #locate-btn {
-    bottom: 20px;
+    bottom: 30px;
     right: 20px;
+    background-color: #BA1609; /* solid red */
+    color: white;
 }
 
-#locate-btn {
+#toggle-console {
     bottom: 20px;
     right: 20px;
+        background-color: #13A803; /* matrix green */
+    color: white;
+}
+
+/* tapping visual feedback */
+#locate-btn:active, #toggle-console:active {
+    transform: scale(0,9);
+    filter: brightness(1,2);
 }
 
 /* Fix for the needle */
