@@ -74,7 +74,7 @@ html, body {
 }
 
 #locate-btn {
-    bottom: 30px;
+    bottom: 50px;
     right: 20px;
     background-color: #BA1609; /* solid red */
     color: white;
@@ -83,13 +83,13 @@ html, body {
 #toggle-console {
     bottom: 20px;
     right: 20px;
-        background-color: #13A803; /* matrix green */
+    background-color: #13A803; /* matrix green */
     color: white;
 }
 
 /* tapping visual feedback */
 #locate-btn:active, #toggle-console:active {
-    transform: scale(0,9);
+    transform: scale(0,2);
     filter: brightness(1,2);
 }
 
