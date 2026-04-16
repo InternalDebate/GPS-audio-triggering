@@ -41,7 +41,7 @@ const userNeedleIcon = L.divIcon({
     className: 'user-needle-container',
     html: '<div id="user-needle"></div>',
     iconSize: [20, 30],
-    iconAnchor: [10, 15]
+    iconAnchor: [10, 13]
 });
 
 const userMarker = L.marker([0, 0], { icon: userNeedleIcon }).addTo(map);
