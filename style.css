@@ -111,13 +111,25 @@ html, body {
     transform-origin: 50% 70%;
 }
 
-.radar-triangle {
+.radar-sattelite {
     width: 0;
     height: 0;
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-bottom: 15px solid #3498db;
-    transform-origin: center bottom;
+    background-color: rgba(52, 152, 219, 0.4); /* Translucent blue */
+    border: 2px solid #3498db;
+    border-radius: 50%; /* Makes it a circle */
+    position: relative;
+    transform-origin: center center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.radar-container {
+    width: 0;
+    height: 0;
+    display: flex;
+    align-items: center;
+    justify-contents: center;
 }
 
 #crosshair {
