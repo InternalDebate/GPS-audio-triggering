@@ -207,12 +207,17 @@ function initCompass() {
         // Update orientation line based on heading
         const userPos = userMarker.getLatLng();
         if (userPos && userPos.lat !== 0) {
-            const bearing = currentHeading;
-            const distance = 0.0005; // in degrees, roughly 50m at equator
-            const bearingRad = (bearing * Math.PI) / 180;
-            const endLat = userPos.lat + distance * Math.cos(bearingRad);
-            const endLng = userPos.lng + distance * Math.sin(bearingRad);
-            orientationLine.setLatLngs([[userPos.lat, userPos.lng], [endLat, endLng]]);
+            const circleRadius = userMarker.getRadius(); // Get the circle radius in pixels
+            // Line length: 1.25x the circle radius converted to km
+            // At default 12px circle, this is ~35 meters
+            const lineDistanceKm = (circleRadius / 12) * 1.25 * 0.035;
+            
+            const from = turf.point([userPos.lng, userPos.lat]);
+            const to = turf.destination(from, lineDistanceKm, currentHeading);
+            orientationLine.setLatLngs([
+                [userPos.lat, userPos.lng],
+                [to.geometry.coordinates[1], to.geometry.coordinates[0]]
+            ]);
         }
         
         requestAnimationFrame(animate);
