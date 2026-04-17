@@ -31,10 +31,9 @@ const soundZones = [
     { name: "maliebaan voorbijgaande auto's", lat: 52.089994, lng: 5.131597, radius: 20, audioFile: 'Nature noise - EMF 7 - Autos.mp3' },
     { name: "maliebaan duif", lat: 52.091572, lng: 5.133955, radius: 20, audioFile: 'Nature noise - Vogel - Duif.mp3' },
     { name: "maliebaan mus", lat: 52.089168, lng: 5.129830, radius: 20, audioFile: 'Nature noise - Vogel - mus.mp3' },
-    // --- Breda test spots ---
-    { name: "Breda test apotheek", lat: 51.586285, lng: 4.764757, radius: 20, audioFile: 'Nature noise - EMF 6 - headphone conus.mp3' },
-    { name: "Breda test onderweg centrum", lat: 51.588222, lng: 4.775105, radius: 15, audioFile: 'Nature noise - EMF 7 - Autos.mp3' },
-    { name: "Breda test onderweg centrum2", lat: 51.588206, lng: 4.774762, radius: 15, audioFile: 'Nature noise - Vogel - Duif.mp3' },
+    { name: "maliebaan brom", lat: 52.092356, lng: 5.135255, radius: 15, audioFile: 'Nature noise - EMF 8 - fan noise.mp3' },
+    { name: "maliebaan 50", lat: 52.092397, lng: 5.134868, radius: 9, audioFile: 'Nature noise - EMF 9 - phone IR.mp3' },
+    { name: "maliebaan eind thema", lat: 52.094434, lng: 5.137989, radius: 15, audioFile: 'Nature noise - Music - EMF 1.mp3' },
 ];
 
 // --- 2. MAP SETUP ---
