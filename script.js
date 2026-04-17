@@ -1,5 +1,5 @@
 // --- 0. GLOBALS & VIRTUAL CONSOLE ---
-const VERSION = 'v0.114';
+const VERSION = 'v0.114.1';
 let closestZone = null;
 let smoothLat = 0;
 let smoothLng = 0;
@@ -81,8 +81,6 @@ const userIcon = L.divIcon({
     iconSize: [50, 50],
     iconAnchor: [25, 25]
 });
-
-const userMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);
 
 const userMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);
 
