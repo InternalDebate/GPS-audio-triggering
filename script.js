@@ -213,31 +213,6 @@ function initCompass() {
 
 // --- 6. BUTTONS & UI EVENTS ---
 
-// Manual Fade In
-document.getElementById('manual-in').addEventListener('click', () => {
-    if (!closestZone) return;
-    console.log("Manual Fade-In Target:", closestZone.name);
-    closestZone.isInside = true;
-    closestZone.howl.off('fade');
-    if (!closestZone.howl.playing()) {
-        closestZone.howl.volume(0);
-        closestZone.howl.play();
-    }
-    closestZone.howl.fade(closestZone.howl.volume(), 1.0, 3000);
-});
-
-// Manual Fade Out
-document.getElementById('manual-out').addEventListener('click', () => {
-    if (!closestZone) return;
-    console.log("Manual Fade-Out Target:", closestZone.name);
-    closestZone.isInside = false;
-    closestZone.howl.off('fade');
-    closestZone.howl.fade(closestZone.howl.volume(), 0, 5000);
-    closestZone.howl.once('fade', () => {
-        if (!closestZone.isInside) closestZone.howl.pause();
-    });
-});
-
 // Start Button
 document.getElementById('start-btn').addEventListener('click', function () {
     this.style.display = 'none';

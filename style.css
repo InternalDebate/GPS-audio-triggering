@@ -23,6 +23,10 @@ html, body {
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
 }
 
 #header-title h1 {
@@ -41,7 +45,7 @@ html, body {
 
 #right-panel {
     position: absolute;
-    top: 70px; /* Moved down to avoid header */
+    top: 70px;
     right: 10px;
     z-index: 1000;
 }
