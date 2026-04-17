@@ -33,7 +33,7 @@ const soundZones = [
     { name: "maliebaan mus", lat: 52.089168, lng: 5.129830, radius: 20, audioFile: 'Nature noise - Vogel - mus.mp3' },
     { name: "maliebaan brom", lat: 52.092356, lng: 5.135255, radius: 15, audioFile: 'Nature noise - EMF 8 - fan noise.mp3' },
     { name: "maliebaan 50", lat: 52.092397, lng: 5.134868, radius: 9, audioFile: 'Nature noise - EMF 9 - phone IR.mp3' },
-    { name: "maliebaan eind thema", lat: 52.094434, lng: 5.137989, radius: 15, audioFile: 'Nature noise - Music - EMF 1.mp3' },
+    { name: "maliebaan eind thema", lat: 52.094434, lng: 5.137989, radius: 45, audioFile: 'Nature noise - Music - EMF 1.mp3' },
 ];
 
 // --- 2. MAP SETUP ---
