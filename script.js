@@ -71,16 +71,16 @@ document.getElementById('header-h1').innerText = `Ghosts of the Maliebaan (${VER
 
 document.getElementById('center-coords').innerText = `Center: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
 
-// Create user circle marker
 // Create user marker with circle and orientation line as single SVG icon
 const userIcon = L.divIcon({
     className: 'user-marker',
-    html: `<svg width="50" height="50" viewBox="0 0 50 50" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));">
-        <circle cx="25" cy="25" r="12" fill="red" stroke="darkred" stroke-width="2" opacity="0.7"/>
-        <line x1="25" y1="0" x2="25" y2="12" stroke="darkred" stroke-width="2" opacity="0.8"/>
+    html: `<svg width="50" height="50" viewBox="0 0 50 50" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.3)); display: block;">
+        <circle cx="25" cy="25" r="12" fill="white" stroke="darkred" stroke-width="2" opacity="0.7"/>
+        <line x1="25" y1="6" x2="25" y2="24" stroke="darkred" stroke-width="2" opacity="0.8"/>
     </svg>`,
     iconSize: [50, 50],
-    iconAnchor: [25, 25]
+    iconAnchor: [25, 25],
+    popupAnchor: [0, -25]
 });
 
 const userMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);

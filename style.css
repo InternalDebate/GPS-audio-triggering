@@ -185,3 +185,9 @@ html, body {
     border-radius: 4px;
     cursor: pointer;
 }
+
+/* User marker centering */
+.user-marker {
+    margin: 0 !important;
+    padding: 0 !important;
+}
