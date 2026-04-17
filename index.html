@@ -39,9 +39,30 @@
         <div id="log-container"></div>
     </div>
 
-    <button id="toggle-console" title="Toggle Debug">📟</button>
-    <button id="locate-btn" title="Center on Me">🎯</button>
-    <button id="toggle-satellite" title="Toggle Satellite">🛰️</button>
+    <button id="toggle-console" title="Toggle Debug">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <path d="M2 17h20"/>
+            <path d="M6 21h12"/>
+        </svg>
+    </button>
+    <button id="locate-btn" title="Center on Me">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="8"/>
+            <circle cx="12" cy="12" r="3" fill="currentColor"/>
+            <path d="M12 1v4M12 19v4M23 12h-4M5 12H1"/>
+        </svg>
+    </button>
+    <button id="toggle-satellite" title="Toggle Satellite">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M4.22 4.22l2.83 2.83"/>
+            <path d="M16.95 16.95l2.83 2.83"/>
+            <path d="M19.78 4.22l-2.83 2.83"/>
+            <path d="M7.05 16.95l-2.83 2.83"/>
+            <circle cx="12" cy="12" r="10" fill="none" opacity="0.3"/>
+        </svg>
+    </button>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>

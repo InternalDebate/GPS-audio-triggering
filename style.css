@@ -68,14 +68,19 @@ html, body {
     width: 42px;
     height: 42px;
     border-radius: 50%;
-    border: 3px;
-    font-size: 24px;
+    border: 3px solid;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
     transition: transform 0.1s, filter 0.1s;
+    padding: 0;
+}
+
+#locate-btn svg, #toggle-console svg, #toggle-satellite svg {
+    width: 24px;
+    height: 24px;
 }
 
 #locate-btn {

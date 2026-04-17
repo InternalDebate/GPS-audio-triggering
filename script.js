@@ -1,5 +1,5 @@
 // --- 0. GLOBALS & VIRTUAL CONSOLE ---
-const VERSION = 'v0.112';
+const VERSION = 'v0.113';
 let closestZone = null;
 let smoothLat = 0;
 let smoothLng = 0;
@@ -72,21 +72,18 @@ document.getElementById('header-h1').innerText = `Ghosts of the Maliebaan (${VER
 document.getElementById('center-coords').innerText = `Center: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
 
 // Create user circle marker
-const userMarker = L.circleMarker([0, 0], {
-    radius: 12,
-    fillColor: 'red',
-    color: 'darkred',
-    weight: 2,
-    opacity: 1,
-    fillOpacity: 0.7
-}).addTo(map);
+// Create user marker with circle and orientation line as single SVG icon
+const userIcon = L.divIcon({
+    className: 'user-marker',
+    html: `<svg width="50" height="50" viewBox="0 0 50 50" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));">
+        <circle cx="25" cy="25" r="12" fill="red" stroke="darkred" stroke-width="2" opacity="0.7"/>
+        <line x1="25" y1="0" x2="25" y2="12" stroke="darkred" stroke-width="2" opacity="0.8"/>
+    </svg>`,
+    iconSize: [50, 50],
+    iconAnchor: [25, 25]
+});
 
-// Create orientation line for the circle
-let orientationLine = L.polyline([[0, 0], [0.0001, 0]], { 
-    color: 'darkred', 
-    weight: 2,
-    opacity: 0.8
-}).addTo(map);
+const userMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);
 
 // --- 3. AUDIO PREP ---
 soundZones.forEach(zone => {
@@ -205,19 +202,10 @@ function initCompass() {
         currentHeading += diff * 0.15;
 
         // Update orientation line based on heading
-        const userPos = userMarker.getLatLng();
-        if (userPos && userPos.lat !== 0) {
-            const circleRadius = userMarker.getRadius(); // Get the circle radius in pixels
-            // Line length: 1.25x the circle radius converted to km
-            // At default 12px circle, this is ~35 meters
-            const lineDistanceKm = (circleRadius / 12) * 1.25 * 0.035;
-            
-            const from = turf.point([userPos.lng, userPos.lat]);
-            const to = turf.destination(from, lineDistanceKm, currentHeading);
-            orientationLine.setLatLngs([
-                [userPos.lat, userPos.lng],
-                [to.geometry.coordinates[1], to.geometry.coordinates[0]]
-            ]);
+        // Rotate the marker icon based on heading
+        const markerElement = userMarker.getElement();
+        if (markerElement) {
+            markerElement.style.transform = `rotate(${currentHeading}deg)`;
         }
         
         requestAnimationFrame(animate);
