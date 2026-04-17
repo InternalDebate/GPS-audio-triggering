@@ -190,4 +190,6 @@ html, body {
 .user-marker {
     margin: 0 !important;
     padding: 0 !important;
+    left: -25px !important;
+    top: -25px !important;
 }

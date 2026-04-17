@@ -1,5 +1,5 @@
 // --- 0. GLOBALS & VIRTUAL CONSOLE ---
-const VERSION = 'v0.113';
+const VERSION = 'v0.114';
 let closestZone = null;
 let smoothLat = 0;
 let smoothLng = 0;
@@ -74,14 +74,15 @@ document.getElementById('center-coords').innerText = `Center: ${map.getCenter().
 // Create user marker with circle and orientation line as single SVG icon
 const userIcon = L.divIcon({
     className: 'user-marker',
-    html: `<svg class="user-marker-svg" width="50" height="50" viewBox="0 0 50 50" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.3)); display: block;">
+    html: `<svg class="user-marker-svg" width="50" height="50" viewBox="0 0 50 50" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.3)); display: block; margin: 0; padding: 0;">
         <circle cx="25" cy="25" r="12" fill="white" stroke="darkred" stroke-width="2" opacity="0.7"/>
         <line x1="25" y1="6" x2="25" y2="24" stroke="darkred" stroke-width="2" opacity="0.8"/>
     </svg>`,
     iconSize: [50, 50],
-    iconAnchor: [25, 25],
-    popupAnchor: [0, -25]
+    iconAnchor: [25, 25]
 });
+
+const userMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);
 
 const userMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);
 
