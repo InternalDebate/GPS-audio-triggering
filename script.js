@@ -71,14 +71,22 @@ document.getElementById('header-h1').innerText = `Ghosts of the Maliebaan (${VER
 
 document.getElementById('center-coords').innerText = `Center: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
 
-const userNeedleIcon = L.divIcon({
-    className: 'user-needle-container',
-    html: '<div id="user-needle"></div>',
-    iconSize: [20, 30],
-    iconAnchor: [10, 13]
-});
+// Create user circle marker
+const userMarker = L.circleMarker([0, 0], {
+    radius: 12,
+    fillColor: 'red',
+    color: 'darkred',
+    weight: 2,
+    opacity: 1,
+    fillOpacity: 0.7
+}).addTo(map);
 
-const userMarker = L.marker([0, 0], { icon: userNeedleIcon }).addTo(map);
+// Create orientation line for the circle
+let orientationLine = L.polyline([[0, 0], [0.0001, 0]], { 
+    color: 'darkred', 
+    weight: 2,
+    opacity: 0.8
+}).addTo(map);
 
 // --- 3. AUDIO PREP ---
 soundZones.forEach(zone => {
@@ -196,10 +204,15 @@ function initCompass() {
         if (diff < -180) diff += 360;
         currentHeading += diff * 0.15;
 
-        // TARGET THE NEEDLE ON THE MAP
-        const needleElement = document.getElementById('user-needle');
-        if (needleElement) {
-            needleElement.style.transform = `rotate(${currentHeading}deg)`;
+        // Update orientation line based on heading
+        const userPos = userMarker.getLatLng();
+        if (userPos && userPos.lat !== 0) {
+            const bearing = currentHeading;
+            const distance = 0.0005; // in degrees, roughly 50m at equator
+            const bearingRad = (bearing * Math.PI) / 180;
+            const endLat = userPos.lat + distance * Math.cos(bearingRad);
+            const endLng = userPos.lng + distance * Math.sin(bearingRad);
+            orientationLine.setLatLngs([[userPos.lat, userPos.lng], [endLat, endLng]]);
         }
         
         requestAnimationFrame(animate);
