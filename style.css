@@ -62,7 +62,7 @@ html, body {
     transform: scale(0.9);
 }
 
-#locate-btn, #toggle-console {
+#locate-btn, #toggle-console, #toggle-satellite {
     position: fixed;
     z-index: 9999;
     width: 42px;
@@ -92,8 +92,15 @@ html, body {
     color: white;
 }
 
+#toggle-satellite {
+    bottom: 130px;
+    right: 20px;
+    background-color: #1E90FF; /* dodger blue */
+    color: white;
+}
+
 /* tapping visual feedback */
-#locate-btn:active, #toggle-console:active {
+#locate-btn:active, #toggle-console:active, #toggle-satellite:active {
     transform: scale(0.9);
     filter: brightness(1.2);
 }
