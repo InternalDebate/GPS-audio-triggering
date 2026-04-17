@@ -74,7 +74,7 @@ document.getElementById('center-coords').innerText = `Center: ${map.getCenter().
 // Create user marker with circle and orientation line as single SVG icon
 const userIcon = L.divIcon({
     className: 'user-marker',
-    html: `<svg width="50" height="50" viewBox="0 0 50 50" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.3)); display: block;">
+    html: `<svg class="user-marker-svg" width="50" height="50" viewBox="0 0 50 50" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.3)); display: block;">
         <circle cx="25" cy="25" r="12" fill="white" stroke="darkred" stroke-width="2" opacity="0.7"/>
         <line x1="25" y1="6" x2="25" y2="24" stroke="darkred" stroke-width="2" opacity="0.8"/>
     </svg>`,
@@ -201,11 +201,11 @@ function initCompass() {
         if (diff < -180) diff += 360;
         currentHeading += diff * 0.15;
 
-        // Update orientation line based on heading
-        // Rotate the marker icon based on heading
-        const markerElement = userMarker.getElement();
-        if (markerElement) {
-            markerElement.style.transform = `rotate(${currentHeading}deg)`;
+        // Rotate only the SVG inside the marker
+        const svgElement = document.querySelector('.user-marker-svg');
+        if (svgElement) {
+            svgElement.style.transformOrigin = 'center center';
+            svgElement.style.transform = `rotate(${currentHeading}deg)`;
         }
         
         requestAnimationFrame(animate);
