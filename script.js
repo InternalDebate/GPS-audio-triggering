@@ -36,7 +36,31 @@ const soundZones = [
 // --- 2. MAP SETUP ---
 const map = L.map('map').setView([soundZones[0].lat, soundZones[0].lng], 16);
 
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+// Create tile layers
+const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+});
+
+const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    attribution: '© Esri'
+});
+
+// Add default layer
+osmLayer.addTo(map);
+
+let isSatellite = false;
+
+// Toggle satellite view
+document.getElementById('toggle-satellite').addEventListener('click', () => {
+    if (isSatellite) {
+        map.removeLayer(satelliteLayer);
+        map.addLayer(osmLayer);
+    } else {
+        map.removeLayer(osmLayer);
+        map.addLayer(satelliteLayer);
+    }
+    isSatellite = !isSatellite;
+});
 
 // Set header with version
 document.getElementById('header-h1').innerText = `Ghosts of the Maliebaan (${VERSION})`;
