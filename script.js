@@ -68,7 +68,7 @@ document.getElementById('toggle-satellite').addEventListener('click', () => {
 // Set header with version
 document.getElementById('header-h1').innerText = `Ghosts of the Maliebaan (${VERSION})`;
 
-document.getElementById('center-coords').innerText = `Center: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
+document.getElementById('center-coords').innerText = `coordinates: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
 
 // Create user marker with circle and orientation line as single SVG icon
 const userIcon = L.divIcon({
