@@ -19,7 +19,7 @@ console.log = function (...args) {
     }
 };
 
-// --- 1. DATA ---
+// --- 1. ZONES AND DATA ---
 const soundZones = [
     { name: "maliebaan 1", lat: 52.088679, lng: 5.129786, radius: 10, audioFile: 'Nature noise - EMF 1.mp3' },
     { name: "maliebaan 13", lat: 52.089120, lng: 5.130747, radius: 10, audioFile: 'Nature noise - EMF 2.mp3' },
@@ -39,7 +39,7 @@ const soundZones = [
 // --- 2. MAP SETUP ---
 const map = L.map('map').setView([soundZones[0].lat, soundZones[0].lng], 16);
 
-// Create tile layers
+// Title layers
 const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 });
@@ -48,12 +48,12 @@ const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/
     attribution: '© Esri'
 });
 
-// Add default layer
+// default layer
 osmLayer.addTo(map);
 
 let isSatellite = false;
 
-// Toggle satellite view
+// Sattelite view toggle
 document.getElementById('toggle-satellite').addEventListener('click', () => {
     if (isSatellite) {
         map.removeLayer(satelliteLayer);
@@ -65,7 +65,7 @@ document.getElementById('toggle-satellite').addEventListener('click', () => {
     isSatellite = !isSatellite;
 });
 
-// Set header with version
+// HEADER & VERSION
 document.getElementById('header-h1').innerText = `Ghosts of the Maliebaan (${VERSION})`;
 
 document.getElementById('center-coords').innerText = `coordinates: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
@@ -83,7 +83,7 @@ const userIcon = L.divIcon({
 
 const userMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);
 
-// --- 3. AUDIO PREP ---
+// --- 3. AUDIO PREPARATION ---
 soundZones.forEach(zone => {
     L.circle([zone.lat, zone.lng], { radius: zone.radius, color: '#3498db' }).addTo(map);
     zone.howl = new Howl({
@@ -101,7 +101,7 @@ function updateGuidance(uLat, uLng) {
     if (!uLat || uLat === 0) return;
     const userPoint = turf.point([uLng, uLat]);
 
-    //are we currently inside a zone ???
+    //CHECKING FOR CURRENT ZONE & FINDING CLOSEST ZONE
     let currentOccupiedZone = null;   
     let minDistance = Infinity;
     let targetZone = null; 
@@ -121,9 +121,9 @@ function updateGuidance(uLat, uLng) {
         }
     });
 
-    
+        //skip current occupied zone when finding next closest zone, so we target the correct zone after this one.
         soundZones.forEach(zone => {
-            //skip current zone
+
         if (currentOccupiedZone && zone === currentOccupiedZone) return;
             
         const zonePoint = turf.point([zone.lng, zone.lat]);
@@ -136,7 +136,7 @@ function updateGuidance(uLat, uLng) {
     
     closestZone = targetZone || soundZones[0];
 
-    // B. Audio Trigger Logic
+    // AUDIO TRIGGER LOGIC
     let activeName = currentOccupiedZone ? `Playing: ${currentOccupiedZone.name}` : "No portal detected";
     
     soundZones.forEach(zone => {
@@ -176,14 +176,13 @@ let targetHeading = 0;
 let currentHeading = 0;
 
 function initCompass() {
-    // Look for the needle element now living on the map
     const handleMotion = (e) => {
         let heading = e.webkitCompassHeading || e.alpha;
         if (heading !== null && heading !== undefined) {
             targetHeading = e.webkitCompassHeading ? heading : 360 - heading;
         }
     };
-
+    // For iOS 13+ devices, we need to request permission to access device orientation
     if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
             .then(state => { if (state === 'granted') window.addEventListener('deviceorientation', handleMotion, true); })
@@ -205,7 +204,7 @@ function initCompass() {
             svgElement.style.transformOrigin = 'center center';
             svgElement.style.transform = `rotate(${currentHeading}deg)`;
         }
-        
+    
         requestAnimationFrame(animate);
     }
     animate();
@@ -224,12 +223,12 @@ document.getElementById('start-btn').addEventListener('click', function () {
     // Initialize the compass
     initCompass();
 
-    // IMPORTANT: Run guidance immediately so 'closestZone' is found right away
+    //Run guidance immediately so 'closestZone' is found right away
     const p = userMarker.getLatLng();
     if (p.lat !== 0) {
         updateGuidance(p.lat, p.lng);
     } else {
-        // If GPS hasn't found you yet, use the first zone as a fallback for the buttons
+        // If GPS hasn't found user yet, use the first zone as a fallback for the buttons
         closestZone = soundZones[0];
         console.log("Waiting for GPS... Defaulting to Spot 1");
     }
