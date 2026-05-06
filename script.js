@@ -83,6 +83,55 @@ const userIcon = L.divIcon({
 
 const userMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);
 
+const panel = document.getElementById('right-panel');
+let isDragging = false;
+let startX, startY, startLeft, startTop;
+
+// TOUCH
+panel.addEventListener('touchstart', (e) => {
+    isDragging = true;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    startLeft = panel.offsetLeft;
+    startTop = panel.offsetTop;
+});
+
+panel.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+    panel.style.left = startLeft + dx + 'px';
+    panel.style.top = startTop + dy + 'px';
+    panel.style.right = 'auto';
+});
+
+panel.addEventListener('touchend', () => isDragging = false);
+
+// MOUSE
+panel.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startLeft = panel.offsetLeft;
+    startTop = panel.offsetTop;
+});
+
+document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    panel.style.left = startLeft + dx + 'px';
+    panel.style.top = startTop + dy + 'px';
+    panel.style.right = 'auto';
+});
+
+document.addEventListener('mouseup', () => isDragging = false);
+
+panel.addEventListener('touchend', () => {
+    isDragging = false;
+});
+
 // --- 3. AUDIO PREPARATION ---
 soundZones.forEach(zone => {
     L.circle([zone.lat, zone.lng], { radius: zone.radius, color: '#3498db' }).addTo(map);
@@ -98,11 +147,13 @@ soundZones.forEach(zone => {
 
 // --- 4. GUIDANCE ENGINE ---
 function updateGuidance(uLat, uLng) {
+    
     if (!uLat || uLat === 0) return;
     const userPoint = turf.point([uLng, uLat]);
 
     //CHECKING FOR CURRENT ZONE & FINDING CLOSEST ZONE
-    let currentOccupiedZone = null;   
+    let currentOccupiedZone = null;
+    // 
     let minDistance = Infinity;
     let targetZone = null; 
     
@@ -114,14 +165,14 @@ function updateGuidance(uLat, uLng) {
         if (d <= zone.radius) {
             currentOccupiedZone = zone;
         }
-        
+
         if (d < minDistance) {
             minDistance = d;
             targetZone = zone;
         }
     });
 
-        //skip current occupied zone when finding next closest zone, so we target the correct zone after this one.
+        //skip currently occupied zone when finding next closest zone, so we target the correct zone after this one.
         soundZones.forEach(zone => {
 
         if (currentOccupiedZone && zone === currentOccupiedZone) return;
@@ -240,7 +291,7 @@ document.getElementById('toggle-console').addEventListener('click', () => {
     consoleDiv.style.display = consoleDiv.style.display === 'none' ? 'flex' : 'none';
 });
 
-// Locate User
+// Locate User 
 document.getElementById('locate-btn').addEventListener('click', () => {
     const userPos = userMarker.getLatLng();
     if (userPos && userPos.lat !== 0) {
