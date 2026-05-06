@@ -83,56 +83,56 @@ const userIcon = L.divIcon({
 
 const userMarker = L.marker([0, 0], { icon: userIcon }).addTo(map);
 
-const panel = document.getElementById('right-panel');
+const draggablePanel = document.querySelectorAll('#right-panel, #header-title');
 let isDragging = false;
 let startX, startY, startLeft, startTop;
 
 // TOUCH
-panel.addEventListener('touchstart', (e) => {  
+draggablePanel.addEventListener('touchstart', (e) => {  
     e.stopPropagation(); 
     isDragging = true;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
-    startLeft = panel.offsetLeft;
-    startTop = panel.offsetTop;
+    startLeft = draggablePanel.offsetLeft;
+    startTop = draggablePanel.offsetTop;
 }, { passive: false });
 
-panel.addEventListener('touchmove', (e) => {
+draggablePanel.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
     e.preventDefault();
     const dx = e.touches[0].clientX - startX;
     const dy = e.touches[0].clientY - startY;
-    panel.style.left = startLeft + dx + 'px';
-    panel.style.top = startTop + dy + 'px';
-    panel.style.right = 'auto';
+    draggablePanel.style.left = startLeft + dx + 'px';
+    draggablePanel.style.top = startTop + dy + 'px';
+    draggablePanel.style.right = 'auto';
 }, { passive: false });
 
-panel.addEventListener('touchend', (e) => {
+draggablePanel.addEventListener('touchend', (e) => {
     e.stopPropagation();
     isDragging = false;
 }, { passive: false });
 
 // MOUSE
-panel.addEventListener('mousedown', (e) => {
+draggablePanel.addEventListener('mousedown', (e) => {
     isDragging = true;
     startX = e.clientX;
     startY = e.clientY;
-    startLeft = panel.offsetLeft;
-    startTop = panel.offsetTop;
+    startLeft = draggablePanel.offsetLeft;
+    startTop = draggablePanel.offsetTop;
 });
 
 document.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;
-    panel.style.left = startLeft + dx + 'px';
-    panel.style.top = startTop + dy + 'px';
-    panel.style.right = 'auto';
+    draggablePanel.style.left = startLeft + dx + 'px';
+    draggablePanel.style.top = startTop + dy + 'px';
+    draggablePanel.style.right = 'auto';
 });
 
 document.addEventListener('mouseup', () => isDragging = false);
 
-panel.addEventListener('touchend', () => {
+draggablePanel.addEventListener('touchend', () => {
     isDragging = false;
 });
 
