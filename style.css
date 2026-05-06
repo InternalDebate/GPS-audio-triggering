@@ -51,6 +51,7 @@ html, body {
     top: 155px;
     left: calc(100% - 150px);
     z-index: 1000;
+    touch-action: none; /* Prevents touch events from being hijacked by the browser */
 }
 
 #status-panel {

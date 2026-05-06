@@ -88,13 +88,14 @@ let isDragging = false;
 let startX, startY, startLeft, startTop;
 
 // TOUCH
-panel.addEventListener('touchstart', (e) => {
+panel.addEventListener('touchstart', (e) => {  
+    e.stopPropagation(); 
     isDragging = true;
     startX = e.touches[0].clientX;
     startY = e.touches[0].clientY;
     startLeft = panel.offsetLeft;
     startTop = panel.offsetTop;
-});
+}, { passive: false });
 
 panel.addEventListener('touchmove', (e) => {
     if (!isDragging) return;
@@ -104,9 +105,12 @@ panel.addEventListener('touchmove', (e) => {
     panel.style.left = startLeft + dx + 'px';
     panel.style.top = startTop + dy + 'px';
     panel.style.right = 'auto';
-});
+}, { passive: false });
 
-panel.addEventListener('touchend', () => isDragging = false);
+panel.addEventListener('touchend', (e) => {
+    e.stopPropagation();
+    isDragging = false;
+}, { passive: false });
 
 // MOUSE
 panel.addEventListener('mousedown', (e) => {
