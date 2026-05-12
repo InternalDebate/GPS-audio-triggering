@@ -31,12 +31,16 @@ const soundZones = [
     { name: "maliebaan vrijmetselaarsloge", lat: 52.093208, lng: 5.135714, radius: 12, audioFile: 'Nature noise - EMF 6 - headphone conus.mp3' },
     { name: "maliebaan 24 charging station", lat: 52.090992, lng: 5.132597, radius: 10, audioFile: 'Nature noise - EMF 5.mp3' },
     { name: "maliebaan voorbijgaande auto's", lat: 52.089994, lng: 5.131597, radius: 20, audioFile: 'Nature noise - EMF 7 - Autos.mp3' },
-    { name: "maliebaan duif", lat: 52.091572, lng: 5.133955, radius: 20, audioFile: 'Nature noise - Vogel - Duif.mp3' },
+    { name: "maliebaan duif", lat: 52.090535, lng: 5.132390, radius: 20, audioFile: 'Nature noise - Vogel - Duif.mp3' },
     { name: "maliebaan mus", lat: 52.089168, lng: 5.129830, radius: 20, audioFile: 'Nature noise - Vogel - mus.mp3' },
-    { name: "maliebaan brom", lat: 52.092356, lng: 5.135255, radius: 15, audioFile: 'Nature noise - EMF 8 - fan noise.mp3' },
+    { name: "maliebaan brom", lat: 52.092592, lng: 5.135620, radius: 18, audioFile: 'Nature noise - EMF 8 - fan noise.mp3' },
     { name: "maliebaan 50", lat: 52.092397, lng: 5.134868, radius: 9, audioFile: 'Nature noise - EMF 9 - phone IR.mp3' },
     { name: "maliebaan music 1", lat: 52.094434, lng: 5.137989, radius: 45, audioFile: 'Nature noise - Music - EMF 1.mp3' },
     { name: "maliebaan music 2", lat: 52.093232, lng: 5.136602, radius: 27, audioFile: 'Nature noise - Music - EMF 2.mp3' },
+    { name: "loop audio", lat: 52.091539, lng: 5.133758, radius: 60, audioFile: 'Nature noise - EMF 11 - phone loop.mp3' },
+    { name: "loop bass", lat: 52.091723, lng: 5.133800, radius: 36, audioFile: 'Nature noise - EMF 13 - Bass loop.mp3' },
+    { name: "loop chord", lat: 52.091454, lng: 5.133863, radius: 36, audioFile: 'Nature noise - EMF 12 - car synth loop.mp3' },
+    { name: "loop arp", lat: 52.091784, lng: 5.134224, radius: 36, audioFile: 'Nature noise - EMF 14 - arp loop 1.mp3' },
 
 ];
 
@@ -327,6 +331,34 @@ document.getElementById('safety-confirm-btn').addEventListener('click', function
         console.log("Waiting for GPS... Defaulting to Spot 1");
     }
 
+    // Test Audio Button
+
+    document.getElementById('test-audio-btn').addEventListener('click', () => {
+    const center = map.getCenter();
+    const centerPoint = turf.point([center.lng, center.lat]);
+
+    soundZones.forEach(zone => {
+        const zonePoint = turf.point([zone.lng, zone.lat]);
+        const d = turf.distance(centerPoint, zonePoint, { units: 'meters' });
+        if (d <= zone.radius) {
+            zone.howl.off('fade');
+            zone.howl.volume(0);
+            if (!zone.howl.playing()) zone.howl.play();
+            zone.howl.fade(0, 1.0, 1000);
+            setTimeout(() => {
+                zone.howl.fade(zone.howl.volume(), 0, 1500);
+                zone.howl.once('fade', () => {
+                    if (!zone.isInside) {
+                        zone.howl.pause();
+                        zone.howl.volume(0);
+                    }
+                });
+            }, 3000);
+            console.log("Test audio:", zone.name);
+        }
+    });
+});
+
 
 // Toggle Debug
 document.getElementById('toggle-console').addEventListener('click', () => {
@@ -361,17 +393,17 @@ map.on('move', function () {
     document.getElementById('center-coords').innerText = `Coordinates: ${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`;
 
     const centerPoint = turf.point([center.lng, center.lat]);
-    let insideZone = null;
+    const insideZones = [];
 
     soundZones.forEach(zone => {
         const zonePoint = turf.point([zone.lng, zone.lat]);
         const d = turf.distance(centerPoint, zonePoint, { units: 'meters' });
-        if (d <= zone.radius) insideZone = zone;
+        if (d <= zone.radius) insideZones.push(zone.name);
     });
 
-    document.getElementById('pointing-at').innerText = insideZone
+    document.getElementById('pointing-at').innerText = insideZones.length > 0
         ? `pointing at:
-         ${insideZone.name}`
+         ${insideZones.join(', ')}`
         : `pointing at:
          nothing`;
 });
