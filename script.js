@@ -285,9 +285,29 @@ function initCompass() {
 // --- 6. BUTTONS & UI EVENTS ---
 
 // Start Button
+// document.getElementById('start-btn').addEventListener('click', function () {
+//     this.style.display = 'none';
+//     experienceStarted = true;
 document.getElementById('start-btn').addEventListener('click', function () {
-    this.style.display = 'none';
+    document.getElementById('safety-message').style.display = 'flex';
+});
+
+document.getElementById('safety-confirm-btn').addEventListener('click', function () {
+    document.getElementById('safety-message').style.display = 'none';
+    document.getElementById('start-btn').style.display = 'none';
     experienceStarted = true;
+
+    if (Howler.ctx.state === 'suspended') Howler.ctx.resume();
+    initCompass();
+
+    const p = userMarker.getLatLng();
+    if (p.lat !== 0) {
+        updateGuidance(p.lat, p.lng);
+    } else {
+        closestZone = soundZones[0];
+        console.log("Waiting for GPS... Defaulting to Spot 1");
+    }
+});
 
     // Force the browser to resume audio
     if (Howler.ctx.state === 'suspended') Howler.ctx.resume();
@@ -304,7 +324,7 @@ document.getElementById('start-btn').addEventListener('click', function () {
         closestZone = soundZones[0];
         console.log("Waiting for GPS... Defaulting to Spot 1");
     }
-});
+
 
 // Toggle Debug
 document.getElementById('toggle-console').addEventListener('click', () => {

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <div id="header-title">
@@ -18,7 +20,7 @@
         <div id="status-panel">
             <p id="status">Ready...</p>
             <div id="center-coords">0.0000, 0.0000</div>
-            
+
             <hr>
         </div>
     </div>
@@ -36,24 +38,37 @@
 
     <button id="toggle-console" title="Toggle Debug">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="3" width="20" height="14" rx="2"/>
-            <path d="M2 17h20"/>
-            <path d="M6 21h12"/>
+            <rect x="2" y="3" width="20" height="14" rx="2" />
+            <path d="M2 17h20" />
+            <path d="M6 21h12" />
         </svg>
     </button>
     <button id="locate-btn" title="Center on Me">
         <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="8"/>
-            <circle cx="12" cy="12" r="3" fill="currentColor"/>
-            <path d="M12 1v4M12 19v4M23 12h-4M5 12H1"/>
+            <circle cx="12" cy="12" r="8" />
+            <circle cx="12" cy="12" r="3" fill="currentColor" />
+            <path d="M12 1v4M12 19v4M23 12h-4M5 12H1" />
         </svg>
     </button>
-    <button id="toggle-satellite" title="Toggle Satellite">        
+    <button id="toggle-satellite" title="Toggle Satellite">
     </button>
+
+        <div id="safety-message">
+        <div id="safety-message-box">
+            <h2>Before you begin</h2>
+            <p>This soundwalk will accompany you through the Maliebaan.</p>
+            <p>Please stay aware of your surroundings at all times. watch for traffic, cyclists, and other pedestrians.
+            </p>
+            <p>Walk at a comfortable pace and enjoy the experience safely.</p>
+            <button id="safety-confirm-btn">I understand, start the walk</button>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
     <script src="script.js"></script>
+
 </body>
+
 </html>
