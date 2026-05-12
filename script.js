@@ -26,7 +26,7 @@ const soundZones = [
     { name: "maliebaan 1", lat: 52.088679, lng: 5.129786, radius: 10, audioFile: 'Nature noise - EMF 1.mp3' },
     { name: "maliebaan 13", lat: 52.089120, lng: 5.130747, radius: 10, audioFile: 'Nature noise - EMF 2.mp3' },
     { name: "electriciteitskast", lat: 52.089430, lng: 5.130836, radius: 7, audioFile: 'Nature noise - EMF 3' },
-    { name: "maliebaan 14", lat: 52.090412, lng: 5.131557, radius: 5, audioFile: 'Nature noise - EMF 4 - phones & chips.mp3' },
+    { name: "maliebaan 14", lat: 52.090412, lng: 5.131557, radius: 10, audioFile: 'Nature noise - EMF 4 - phones & chips.mp3' },
     { name: "maliebaan 143 charging station", lat: 52.093790, lng: 5.137581, radius: 7, audioFile: 'Nature noise - EMF 4 - phones & chips.mp3' },
     { name: "maliebaan vrijmetselaarsloge", lat: 52.093208, lng: 5.135714, radius: 12, audioFile: 'Nature noise - EMF 6 - headphone conus.mp3' },
     { name: "maliebaan 24 charging station", lat: 52.090992, lng: 5.132597, radius: 10, audioFile: 'Nature noise - EMF 5.mp3' },
@@ -35,7 +35,9 @@ const soundZones = [
     { name: "maliebaan mus", lat: 52.089168, lng: 5.129830, radius: 20, audioFile: 'Nature noise - Vogel - mus.mp3' },
     { name: "maliebaan brom", lat: 52.092356, lng: 5.135255, radius: 15, audioFile: 'Nature noise - EMF 8 - fan noise.mp3' },
     { name: "maliebaan 50", lat: 52.092397, lng: 5.134868, radius: 9, audioFile: 'Nature noise - EMF 9 - phone IR.mp3' },
-    { name: "maliebaan eind thema", lat: 52.094434, lng: 5.137989, radius: 45, audioFile: 'Nature noise - Music - EMF 1.mp3' },
+    { name: "maliebaan music 1", lat: 52.094434, lng: 5.137989, radius: 45, audioFile: 'Nature noise - Music - EMF 1.mp3' },
+    { name: "maliebaan music 2", lat: 52.093232, lng: 5.136602, radius: 27, audioFile: 'Nature noise - Music - EMF 2.mp3' },
+
 ];
 
 // --- 2. MAP SETUP ---
@@ -86,7 +88,7 @@ document.getElementById('toggle-satellite').addEventListener('click', () => {
 // HEADER & VERSION
 document.getElementById('header-h1').innerText = `Ghosts of the Maliebaan (${VERSION})`;
 
-document.getElementById('center-coords').innerText = `coordinates: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
+//document.getElementById('center-coords').innerText = `Coordinates: ${map.getCenter().lat.toFixed(6)}, ${map.getCenter().lng.toFixed(6)}`;
 
 // Create user marker with circle and orientation line as single SVG icon
 const userIcon = L.divIcon({
@@ -356,11 +358,22 @@ navigator.geolocation.watchPosition(pos => {
 // --- 8. MAP CENTER COORDINATES ---
 map.on('move', function () {
     const center = map.getCenter();
-    const lat = center.lat.toFixed(6);
-    const lng = center.lng.toFixed(6);
+    document.getElementById('center-coords').innerText = `Coordinates: ${center.lat.toFixed(6)}, ${center.lng.toFixed(6)}`;
 
-    // Update the UI text
-    document.getElementById('center-coords').innerText = `Center: ${lat}, ${lng}`;
+    const centerPoint = turf.point([center.lng, center.lat]);
+    let insideZone = null;
+
+    soundZones.forEach(zone => {
+        const zonePoint = turf.point([zone.lng, zone.lat]);
+        const d = turf.distance(centerPoint, zonePoint, { units: 'meters' });
+        if (d <= zone.radius) insideZone = zone;
+    });
+
+    document.getElementById('pointing-at').innerText = insideZone
+        ? `pointing at:
+         ${insideZone.name}`
+        : `pointing at:
+         nothing`;
 });
 
 function clearLog() { logContainer.innerHTML = ''; }

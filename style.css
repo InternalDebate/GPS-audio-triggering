@@ -143,6 +143,14 @@ html, body {
     color: #a0a0b0;
     font-family: monospace;
 }
+
+#pointing-at {
+    margin: 0;
+    padding: 6px 0;
+    color: #a0a0b0;
+    font-style: italic;
+}
+
 #status-panel hr {
     border: none;
     height: 1px;
