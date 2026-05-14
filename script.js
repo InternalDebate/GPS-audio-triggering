@@ -1,5 +1,5 @@
 // --- 0. GLOBALS & VIRTUAL CONSOLE ---
-const VERSION = 'v0.115';
+const VERSION = 'v0.127';
 let closestZone = null;
 let smoothLat = 0;
 let smoothLng = 0;
