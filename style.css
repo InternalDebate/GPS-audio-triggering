@@ -1,11 +1,13 @@
-html, body {
+html,
+body {
     height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
     font-family: sans-serif;
     overflow: hidden;
-    background-color: #000; /* Prevents white flash */
+    background-color: #000;
+    /* Prevents white flash */
 }
 
 #map {
@@ -42,7 +44,7 @@ html, body {
     text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
     font-weight: 300;
     letter-spacing: 2px;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(2px);
     box-shadow: 0 0 20px rgba(138, 43, 226, 0.3), inset 0 0 20px rgba(138, 43, 226, 0.1);
 }
 
@@ -51,7 +53,8 @@ html, body {
     top: 155px;
     left: calc(100% - 150px);
     z-index: 1000;
-    touch-action: none; /* Prevents touch events from being hijacked by the browser */
+    touch-action: none;
+    /* Prevents touch events from being hijacked by the browser */
 }
 
 #status-panel {
@@ -62,14 +65,15 @@ html, body {
     font-size: 11px;
     color: #b0b0c0;
     box-shadow: 0 0 20px rgba(138, 43, 226, 0.2), inset 0 0 15px rgba(138, 43, 226, 0.1);
-    border: 2px solid rgba(138, 43, 226, 0.4); 
+    border: 2px solid rgba(138, 43, 226, 0.4);
     backdrop-filter: blur(2px);
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 8px;
 }
 
-#safety-message {
+#safety-message,
+#info-message {
     position: fixed;
     inset: 0;
     z-index: 10000;
@@ -80,7 +84,8 @@ html, body {
     padding: 24px;
 }
 
-#safety-message-box {
+#safety-message-box,
+#info-message-box {
     background: rgba(15, 15, 25, 0.95);
     border: 2px solid rgba(138, 43, 226, 0.6);
     border-radius: 12px;
@@ -92,6 +97,58 @@ html, body {
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+
+#info-message-box {
+    background-image: url('trippy-animation-joewinograd.gif');
+    background-size: cover;
+    background-position: center;
+
+    background-color: transparent;
+    border: 2px solid rgba(138, 43, 226, 0.6);
+    border-radius: 12px;
+    padding: 28px 24px;
+    max-width: 360px;
+    max-height: 70vh;
+    /* ← limits height to 70% of screen */
+    overflow-y: auto;
+    /* ← makes it scrollable */
+    color: #e0e0e0;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.text-blur-box {
+    position: relative;
+    padding: 12px 16px;
+}
+
+.blur-layer {
+    position: absolute;
+    inset: 0;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: rgba(10, 10, 20, 0.4);
+    border-radius: 8px;
+    
+    -webkit-mask-image: linear-gradient(to bottom,
+            transparent 0%, black 10%, black 90%, transparent 100%),
+        linear-gradient(to right,
+            transparent 0%, black 10%, black 90%, transparent 100%);
+    -webkit-mask-composite: destination-in;
+    mask-image: linear-gradient(to bottom,
+            transparent 0%, black 15%, black 85%, transparent 100%),
+        linear-gradient(to right,
+            transparent 0%, black 15%, black 85%, transparent 100%);
+    mask-composite: intersect;
+}
+
+.text-content {
+    position: relative;
+    z-index: 1;
 }
 
 #safety-message-box h2 {
@@ -110,13 +167,15 @@ html, body {
     color: #b0b0c0;
 }
 
-#safety-confirm-btn {
+#safety-confirm-btn,
+#info-close-btn {
     margin-top: 8px;
     padding: 10px 20px;
     background: linear-gradient(135deg, rgba(100, 20, 140, 0.7), rgba(70, 10, 110, 0.7));
     color: #e0e0e0;
     border: 2px solid rgba(138, 43, 226, 0.6);
     border-radius: 8px;
+    backdrop-filter: blur(5px);
     font-size: 12px;
     font-weight: 600;
     cursor: pointer;
@@ -125,11 +184,11 @@ html, body {
     transition: all 0.3s ease;
 }
 
-#safety-confirm-btn:hover {
+#safety-confirm-btn:hover,
+#info-close-btn:hover {
     box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
     border-color: rgba(138, 43, 226, 0.9);
 }
-
 
 #status {
     margin: 0;
@@ -184,7 +243,9 @@ html, body {
     transform: scale(0.97);
 }
 
-#locate-btn, #toggle-console, #toggle-satellite {
+#locate-btn,
+#toggle-console,
+#toggle-satellite {
     position: fixed;
     z-index: 9999;
     width: 42px;
@@ -195,12 +256,14 @@ html, body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     transition: transform 0.1s, filter 0.1s;
     padding: 0;
 }
 
-#locate-btn svg, #toggle-console svg, #toggle-satellite svg {
+#locate-btn svg,
+#toggle-console svg,
+#toggle-satellite svg {
     width: 24px;
     height: 24px;
 }
@@ -208,43 +271,34 @@ html, body {
 #locate-btn {
     bottom: 75px;
     right: 20px;
-    background-color: #BA1609; /* solid red */
+    background-color: #BA1609;
+    /* red */
     color: white;
 }
 
 #toggle-console {
     bottom: 20px;
     right: 20px;
-    background-color: #13A803; /* matrix green */
+    background-color: #13A803;
+    /* green */
     color: white;
 }
 
 #toggle-satellite {
     bottom: 130px;
     right: 20px;
-    background-color: #1E90FF; /* dodger blue */
+    background-color: #1E90FF;
+    /* blue */
     color: white;
 }
 
 /* tapping visual feedback */
-#locate-btn:active, #toggle-console:active, #toggle-satellite:active {
+#locate-btn:active,
+#toggle-console:active,
+#toggle-satellite:active {
     transform: scale(0.9);
     filter: brightness(1.2);
 }
-
-/* Fix for the needle */
-#user-needle {
-    width: 0; 
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 25px solid red;
-    position: absolute;
-    top: -12px;
-    left: -10px;
-    transform-origin: 50% 70%;
-}
-
 
 
 #crosshair {
@@ -260,12 +314,15 @@ html, body {
 /* --- Debug Console (Add this to the bottom of style.css) --- */
 #debug-console {
     position: fixed;
-    bottom: 100px; /* Sits above the new 60px buttons */
+    bottom: 100px;
+    /* Sits above the new 60px buttons */
     left: 10px;
     right: 10px;
     height: 200px;
-    background: rgba(0, 0, 0, 0.85); /* Semi-transparent black */
-    color: #00ff00; /* Classic "Matrix" green text */
+    background: rgba(0, 0, 0, 0.85);
+    /* Semi-transparent black */
+    color: #00ff00;
+    /* Classic "Matrix" green text */
     font-family: monospace;
     font-size: 11px;
     z-index: 9999;
@@ -273,7 +330,8 @@ html, body {
     display: flex;
     flex-direction: column;
     border: 1px solid #444;
-    pointer-events: auto; /* Ensures you can scroll the log */
+    pointer-events: auto;
+    /* Ensures you can scroll the log */
 }
 
 #debug-header {

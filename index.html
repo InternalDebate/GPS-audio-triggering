@@ -12,20 +12,23 @@
 <body>
 
     <div id="header-title">
-        <h1 id="header-h1">Ghosts of the Maliebaan</h1>
+        <h1 id="header-h1"></h1>
         <button id="start-btn">PRESS TO START</button>
     </div>
 
     <div id="right-panel">
         <div id="status-panel">
-            <p id="status">Ready...</p>
+            <p id="status">Not inside any zone yet...</p>
+            <hr>
             <div id="center-coords">Coordinates: 0.000000, 0.000000</div>
             <hr>
             <div id="pointing-at">pointing at:
-         nothing</div>
+                nothing</div>
             <hr>
-            <button id="test-audio-btn">TEST AUDIO</button>
+            <button id="info-btn">Information</button>
+
         </div>
+    </div>
     </div>
 
     <div id="map"></div>
@@ -58,15 +61,172 @@
 
     <div id="safety-message">
         <div id="safety-message-box">
-            <h2>Before you begin</h2>
-            <p>This soundwalk will accompany you through the Maliebaan.</p>
-            <p>Please stay aware of your surroundings at all times. watch for traffic, cyclists, and other pedestrians.
-            </p>
-            <p>Walk at a comfortable pace and enjoy the experience !</p>
+            <h2 style="margin: 0 auto;">Before you begin</h2>
+            <!-- License: PD. Made by mapbox: https://github.com/mapbox/maki -->
+            <svg width="80px" height="80px" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" id="caution"
+                fill="white" style="display: block; margin: 0 auto;">
+                <path
+                    d="M14.9,13.4L8.5,0.6c-0.4-0.8-1.5-0.8-1.9,0L0.1,13.4c-0.4,0.7,0.2,1.6,1,1.6h12.8C14.7,15,15.2,14.1,14.9,13.4z M7.5,13&#xA;&#x9;C6.7,13,6,12.3,6,11.5S6.6,10,7.5,10S9,10.7,9,11.5C9,12.4,8.3,13,7.5,13z M8.5,9h-2L6,5.5C6,5.2,6.2,5,6.5,5h2C8.8,5,9,5.2,9,5.5&#xA;&#x9;L8.5,9z" />
+            </svg>
+            <p style="margin: 0 auto;">CAUTION! Please stay aware of your surroundings at all times. watch for traffic,
+                cyclists and other
+                pedestrians.</p>
+
+            <!-- Made by Tyler Brooks: Tyler Brooks -->
+            <svg width="80px" height="80px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"
+                xmlns:xlink="http://www.w3.org/1999/xlink" fill="white" style="display: block; margin: 0 auto;">
+                <defs>
+                    <clipPath id="clip-headphones">
+                        <rect width="32" height="32" />
+                    </clipPath>
+                </defs>
+                <g id="headphones" clip-path="url(#clip-headphones)">
+                    <g id="Group_3412" data-name="Group 3412" transform="translate(-208)">
+                        <g id="Group_3405" data-name="Group 3405">
+                            <g id="Group_3404" data-name="Group 3404">
+                                <g id="Group_3403" data-name="Group 3403">
+                                    <path id="Path_4058" data-name="Path 4058"
+                                        d="M224,.832a13.632,13.632,0,0,0-13.617,13.617V22.5a5.986,5.986,0,0,0,5.98,5.98,1,1,0,0,0,1-1v-9.96a1,1,0,0,0-1-1,5.951,5.951,0,0,0-3.98,1.529v-3.6a11.607,11.607,0,0,1,.334-2.719c1.763-3.607,6.15-6.172,11.283-6.172s9.519,2.565,11.282,6.172a11.608,11.608,0,0,1,.334,2.719v3.6a5.951,5.951,0,0,0-3.98-1.529,1,1,0,0,0-1,1v9.96a1,1,0,0,0,1,1,5.986,5.986,0,0,0,5.98-5.98V14.449A13.631,13.631,0,0,0,224,.832ZM215.362,18.65v7.706a3.981,3.981,0,0,1,0-7.706ZM224,4.558a14.547,14.547,0,0,0-9.7,3.513,11.6,11.6,0,0,1,19.4,0A14.547,14.547,0,0,0,224,4.558Zm8.636,21.8V18.65a3.981,3.981,0,0,1,0,7.706Z"
+                                        fill="white" />
+                                </g>
+                            </g>
+                        </g>
+                        <g id="Group_3408" data-name="Group 3408">
+                            <g id="Group_3407" data-name="Group 3407">
+                                <g id="Group_3406" data-name="Group 3406">
+                                    <path id="Path_4059" data-name="Path 4059"
+                                        d="M218.364,16.6a.5.5,0,0,0-.5.5V27.9a.5.5,0,1,0,1,0V17.1A.5.5,0,0,0,218.364,16.6Z"
+                                        fill="white" />
+                                </g>
+                            </g>
+                        </g>
+                        <g id="Group_3411" data-name="Group 3411">
+                            <g id="Group_3410" data-name="Group 3410">
+                                <g id="Group_3409" data-name="Group 3409">
+                                    <path id="Path_4060" data-name="Path 4060"
+                                        d="M229.633,16.6a.5.5,0,0,0-.5.5V27.9a.5.5,0,1,0,1,0V17.1A.5.5,0,0,0,229.633,16.6Z"
+                                        fill="white" />
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+            <p style="margin: 0 auto;">Wear headphones for the best experience!</p>
+
+            <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                <!---maryakveo.com/ -->
+                <svg width="40px" height="40px" viewBox="0 -2 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <g id="wave" transform="translate(-2 -4)">
+                        <path id="primary" d="M21,11c-2.25,0-2.25,2-4.5,2s-2.25-2-4.5-2-2.25,2-4.5,2S5.25,11,3,11"
+                            fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" />
+                        <path id="primary-2" data-name="primary"
+                            d="M3,5C5.25,5,5.25,7,7.5,7S9.75,5,12,5s2.26,2,4.51,2S18.75,5,21,5" fill="none"
+                            stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                        <path id="primary-3" data-name="primary"
+                            d="M21,17c-2.25,0-2.25,2-4.5,2s-2.25-2-4.5-2-2.25,2-4.5,2S5.25,17,3,17" fill="none"
+                            stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                    </g>
+                </svg>
+                <!---calcite-ui-icons -->
+                <svg width="80px" height="80px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="white">
+                    <path
+                        d="M10.1 3A1.9 1.9 0 1 1 12 4.9 1.899 1.899 0 0 1 10.1 3zm6.257 13.26l-2.425-3.377-.293-5.403c-.067-1.287-1.823-1.449-3.401-1.579-.945 1.6-2.48 4.575-3.125 5.838a.721.721 0 0 0 .265.942.74.74 0 0 0 1.033-.264l2.104-3.72.258 4.338 3.47 4.144 1.724 4.858a1.088 1.088 0 0 0 2.081-.496.953.953 0 0 0-.03-.202c-.03-.113-1.66-5.078-1.66-5.078zm-6.014-2.18l1.581 1.887-.335 1.588-3.227 4.285a1.087 1.087 0 1 1-1.808-1.2l3.065-4.285zM18 10.936a.881.881 0 0 1-.824 1.51c-.611-.37-2.35-1.536-2.35-1.536l-.104-1.926z" />
+                    <path fill="none" d="M0 0h24v24H0z" />
+                </svg>
+                <!---maryakveo.com/ -->
+                <svg width="40px" height="40px" viewBox="0 -2 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <g id="wave2" transform="translate(-2 -4)">
+                        <path d="M21,11c-2.25,0-2.25,2-4.5,2s-2.25-2-4.5-2-2.25,2-4.5,2S5.25,11,3,11" fill="none"
+                            stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                        <path d="M3,5C5.25,5,5.25,7,7.5,7S9.75,5,12,5s2.26,2,4.51,2S18.75,5,21,5" fill="none"
+                            stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                        <path d="M21,17c-2.25,0-2.25,2-4.5,2s-2.25-2-4.5-2-2.25,2-4.5,2S5.25,17,3,17" fill="none"
+                            stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+                    </g>
+                </svg>
+            </div>
+            <p style="margin: 0 auto;">No rush! Walk at a comfortable pace.</p>
             <button id="safety-confirm-btn">I understand, start the walk</button>
         </div>
     </div>
 
+    <div id="info-message" style="display: none;">
+
+        <div id="info-message-box">
+            <div class="text-blur-box">
+                <div class="blur-layer"></div>
+                <div class="text-content">
+                    <h2>Nature Noise 030</h2>
+                    <h3>Een HKU project</h3>
+                    <p>
+                    <h4>Nederlands 🇳🇱</h4>
+
+                    Op de Maliebaan staan bomen, leven dieren, insecten en mensen. Er staan ook laadpalen,
+                    wifi-routers, ondergrondse electriciteitskabels.<br> Bijna elk apparaat om ons heen werkt op
+                    electriciteit, en produceert daarmee een <strong>electromagnetisch veld (EMF)</strong>
+                    Deze velden zijn onzichtbaar en normaal gesproken ook onhoorbaar voor menselijke perceptie, want het
+                    zijn
+                    geen trillingen in de lucht zoals geluid dat normaal wel is, maar bewegingen in die onzichtbare
+                    velden.<br>
+                    Voor dit project heb ik die bewegingen opgenomen met een inductor als microfoon.<br> Een inductor is
+                    in essentie een koperen spoel met veel windingen om een metalen staaf. Wanneer een
+                    electromagnetisch veld beweegt of verandert, wekt dat in de spoel een kleine spanning op. Die
+                    spanning kan ik versterken, en zo wordt een onhoorbaar veld plotseling hoorbaar.<br>
+                    <em>Wat je hoort zijn de onzichtbare (en onhoorbare) "spoken" of "ghosts" van de Maliebaan.</em>
+                    Later in de wandeling neem ik meer creatieve vrijheden met het geluid, waarbij ik de EMF opnames
+                    gebruik
+                    als
+                    basismateriaal voor een meer muzikale compositie.<br>
+                    Veel plezier!
+                    </p>
+                </div>
+            </div>
+            <img src="inductor.png" alt="A schematic of an inductor">
+            <div class="text-blur-box">
+                <div class="blur-layer"></div>
+                <div class="text-content">
+                    <p><small><em>Een schematische weergave van een inductor<br><br>A schematic of an
+                                inductor</em></small>
+                    </p>
+                </div>
+            </div>
+            <p>
+            <div class="text-blur-box">
+                <div class="blur-layer"></div>
+                <div class="text-content">
+                    <h4>English 🇬🇧</h4>
+
+                    On the Maliebaan there are trees, animals, insects and people. There are also charging stations,
+                    wifi routers, underground electricity cables.<br> Almost every device around us runs on electricity,
+                    and in doing so produces an <strong>electromagnetic field (EMF)</strong>
+                    These fields are invisible and normally also inaudible to human perception, because they are not
+                    vibrations
+                    in the air like we are used to with sound, but movements within these invisible fields.<br>
+                    For this project I recorded those movements using an inductor as a microphone.<br> An inductor is
+                    essentially a copper coil with many windings around a metal rod. When an electromagnetic field
+                    moves or changes, it induces a small voltage in the coil. That voltage I can amplify, and so an
+                    inaudible field suddenly becomes audible.<br>
+                    <em>What you hear are the invisible (and inaudible) "ghosts" of the Maliebaan.</em>
+
+                    Later on in the walk, i take more creative freedoms with the sound, using the EMF recordings as raw
+                    material
+                    for a more musical composition.<br>
+
+                    Enjoy!
+                    </p>
+                </div>
+            </div>
+            <div class="text-blur-box">
+                <div class="blur-layer"></div>
+                <div class="text-content">
+                    <footer><small>Jesse Goddijn, Student HKU Muziek & Technologie</small></footer>
+                </div>
+            </div>
+            <button id="info-close-btn">Sluiten | Close</button>
+        </div>
+    </div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
