@@ -3,7 +3,7 @@ const VERSION = 'v0.127';
 let closestZone = null;
 let smoothLat = 0;
 let smoothLng = 0;
-const smoothingFactor = 0.15;
+const smoothingFactor = 0.7;
 let experienceStarted = false;
 
 const logContainer = document.getElementById('log-container');
@@ -263,13 +263,13 @@ function initCompass() {
     }
 
     function animate() {
-        // Smooth rotation
+        // Anti-jitter logic
         let diff = targetHeading - currentHeading;
         if (diff > 180) diff -= 360;
         if (diff < -180) diff += 360;
-        currentHeading += diff * 0.15;
+        currentHeading += diff * 0.6;
 
-        // Rotate only the SVG inside the marker
+        // Rotate the user SVG
         const svgElement = document.querySelector('.user-marker-svg');
         if (svgElement) {
             svgElement.style.transformOrigin = 'center center';
@@ -313,7 +313,8 @@ document.getElementById('safety-confirm-btn').addEventListener('click', function
 
     // Test Audio Button or information button
 
-    //begin test audio section
+    //begin test audio section-------------------------------------------------------------------------
+
 //     document.getElementById('test-audio-btn').addEventListener('click', () => {
 //     const center = map.getCenter();
 //     const centerPoint = turf.point([center.lng, center.lat]);
@@ -340,7 +341,9 @@ document.getElementById('safety-confirm-btn').addEventListener('click', function
 //         }
 //     });
 // });
-    //end of test audio section
+
+    //end of test audio section--------------------------------------------------------------------------------------
+
 
     //information button
     // Information Button
