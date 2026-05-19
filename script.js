@@ -24,7 +24,7 @@ console.log = function (...args) {
 const soundZones = [
     { name: "maliebaan 1", lat: 52.088679, lng: 5.129786, radius: 10, audioFile: 'Nature noise - EMF 1.mp3' },
     { name: "maliebaan 13", lat: 52.089120, lng: 5.130747, radius: 10, audioFile: 'Nature noise - EMF 2.mp3' },
-    { name: "electriciteitskast", lat: 52.089389, lng: 5.1308275, audioFile: 'Nature noise - EMF 3.mp3' },
+    { name: "electriciteitskast", lat: 52.089389, lng: 5.1308275, radius: 7, audioFile: 'Nature noise - EMF 3.mp3' },
     { name: "maliebaan 14", lat: 52.090412, lng: 5.131557, radius: 10, audioFile: 'Nature noise - EMF 4 - phones & chips.mp3' },
     { name: "maliebaan 143 charging station", lat: 52.093790, lng: 5.137581, radius: 7, audioFile: 'Nature noise - EMF 4 - phones & chips.mp3' },
     { name: "maliebaan vrijmetselaarsloge", lat: 52.093208, lng: 5.135714, radius: 12, audioFile: 'Nature noise - EMF 6 - headphone conus.mp3' },
