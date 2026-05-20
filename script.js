@@ -359,9 +359,14 @@ document.getElementById('info-close-btn').addEventListener('click', () => {
 
 
 // Toggle Debug
+// document.getElementById('toggle-console').addEventListener('click', () => {
+//     const consoleDiv = document.getElementById('debug-console');
+//     consoleDiv.style.display = consoleDiv.style.display === 'none' ? 'flex' : 'none';
+// });
+
 document.getElementById('toggle-console').addEventListener('click', () => {
-    const consoleDiv = document.getElementById('debug-console');
-    consoleDiv.style.display = consoleDiv.style.display === 'none' ? 'flex' : 'none';
+    const statusPanel = document.getElementById('status-panel');
+    statusPanel.style.display = statusPanel.style.display === 'none' ? 'flex' : 'none';
 });
 
 // Locate User 
